@@ -1,10 +1,13 @@
-# final_project
+# MLOPS Group 46: Final project
 
 Final project for DTU 02476 Machine Learning Operations course
+
+By: Kevin Moore, Mario Medoni, Angeliki-Artemis Doumeni and Konstantina Freri
 
 ## Project structure
 
 The directory structure of the project looks like this:
+
 ```txt
 ├── .github/                  # Github actions and dependabot
 │   ├── dependabot.yaml
@@ -48,7 +51,6 @@ The directory structure of the project looks like this:
 ├── requirements_dev.txt      # Development requirements
 └── tasks.py                  # Project tasks
 ```
-
 
 Created using [mlops_template](https://github.com/SkafteNicki/mlops_template),
 a [cookiecutter template](https://github.com/cookiecutter/cookiecutter) for getting
