@@ -2,7 +2,7 @@ from src.final_project.data import MentalDisordersDataset, OUTPUT_FOLDER
 from pathlib import Path
 import pandas as pd
 from pytorch_lightning import LightningDataModule
-from torch.utils.data import DataLoader, random_split
+from torch.utils.data import DataLoader, random_split, TensorDataset
 import torch
 
 
@@ -13,7 +13,6 @@ class MentalDisordersDataModule(LightningDataModule):
         self.batch_size = batch_size
 
     def setup(self, stage: str):
-        self.test = MentalDisordersDataset(train=False, data_dir=self.data_dir)
         trainFullDataset = MentalDisordersDataset(
             train=True, data_dir=self.data_dir)
         self.train, self.val = random_split(
@@ -21,6 +20,9 @@ class MentalDisordersDataModule(LightningDataModule):
             [int(0.9 * len(trainFullDataset)),
              int(0.1 * len(trainFullDataset))],
             generator=torch.Generator().manual_seed(42))
+
+        self.test = MentalDisordersDataset(
+            train=False, data_dir=self.data_dir)
 
     def train_dataloader(self):
         return DataLoader(self.train, batch_size=self.batch_size)

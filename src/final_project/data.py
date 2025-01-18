@@ -3,7 +3,7 @@ from pathlib import Path
 import pandas as pd
 from sklearn.model_selection import train_test_split
 import json
-
+from transformers import AutoTokenizer
 import typer
 from torch.utils.data import random_split, Dataset, DataLoader
 
@@ -39,10 +39,12 @@ class MentalDisordersDataset(Dataset):
     def __getitem__(self, index: int):
         """Return a given sample from the dataset."""
         row = self.df.iloc[index]
-        return row["text"], row["label"]
+        text = row.get("text", "")
+        label = row.get("label", -1)
+        return text, label
 
 
-def preprocess(raw_data_path: Path = RAW_DATA_PATH, output_folder: Path = OUTPUT_FOLDER) -> None:
+def preprocess(raw_data_path: Path = RAW_DATA_PATH, output_folder: Path = OUTPUT_FOLDER,  tokenizer_name: str = "bert-base-uncased", max_length: int = 512) -> None:
     print("Preprocessing data...")
     raw_data = pd.read_csv(raw_data_path)
     preprocessed_data = raw_data.copy()
@@ -61,8 +63,28 @@ def preprocess(raw_data_path: Path = RAW_DATA_PATH, output_folder: Path = OUTPUT
     preprocessed_data["text"] = preprocessed_data["title"] + \
         "\n" + preprocessed_data["selftext"]
 
-    preprocessed_data.rename(
-        columns={"subreddit": "label"}, inplace=True)
+    # preprocessed_data.rename(
+    #     columns={"subreddit": "label"}, inplace=True)
+
+    # Map string labels to integers
+    label_mapping = {label: idx for idx, label in enumerate(
+        preprocessed_data["subreddit"].unique())}
+    preprocessed_data["label"] = preprocessed_data["subreddit"].map(
+        label_mapping)
+
+    # Tokenize text
+    tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
+    tokens = tokenizer(
+        preprocessed_data["text"].tolist(),
+        truncation=True,
+        padding="max_length",
+        max_length=max_length,
+        return_tensors="pt"
+    )
+
+    # Add tokenized data to DataFrame
+    preprocessed_data["input_ids"] = tokens["input_ids"].tolist()
+    preprocessed_data["attention_mask"] = tokens["attention_mask"].tolist()
 
     # Calculate percentages for each unique value
     label_percentage = preprocessed_data['label'].value_counts(
@@ -72,19 +94,18 @@ def preprocess(raw_data_path: Path = RAW_DATA_PATH, output_folder: Path = OUTPUT
     print(label_percentage)
 
     # Save the data
-    # output_folder.mkdir(parents=True, exist_ok=True)
-    # preprocessed_data.to_csv(
-    #     output_folder / "processed_data.csv", index=False)
-
     df_train, df_test = train_test_split(
         preprocessed_data, test_size=0.1, random_state=42)
 
-    # Convert to JSON Lines (one record per line)ue)
+    # Convert to csv
+    with open(output_folder / "label_mapping.json", "w") as f:
+        json.dump(label_mapping, f)
     df_train.to_csv(TRAINING_DATA_PATH, index=False)
 
     df_test.to_csv(TESTING_DATA_PATH, index=False)
 
     print(f"Saved train and test splits at {OUTPUT_FOLDER}")
+    print(f"Label mapping: {label_mapping}")
 
 
 if __name__ == "__main__":
