@@ -1,3 +1,4 @@
+import torch
 from pytorch_lightning import LightningDataModule
 from pathlib import Path
 import pandas as pd
@@ -8,7 +9,7 @@ import typer
 from torch.utils.data import random_split, Dataset, DataLoader
 
 RAW_DATA_PATH = Path("data/raw/mental_disorders_reddit.csv")
-OUTPUT_FOLDER = Path("data/processed")
+OUTPUT_FOLDER = Path("data/processed").resolve()
 TRAINING_DATA_PATH = OUTPUT_FOLDER / "training_data.csv"
 TESTING_DATA_PATH = OUTPUT_FOLDER / "testing_data.csv"
 
@@ -39,9 +40,17 @@ class MentalDisordersDataset(Dataset):
     def __getitem__(self, index: int):
         """Return a given sample from the dataset."""
         row = self.df.iloc[index]
-        text = row.get("text", "")
-        label = row.get("label", -1)
-        return text, label
+
+        input_ids = torch.tensor(eval(row["input_ids"]), dtype=torch.long)
+        attention_mask = torch.tensor(
+            eval(row["attention_mask"]), dtype=torch.long)
+        label = torch.tensor(row["label"], dtype=torch.long)
+
+        return {
+            "input_ids": input_ids,
+            "attention_mask": attention_mask,
+            "labels": label,
+        }
 
 
 def preprocess(raw_data_path: Path = RAW_DATA_PATH, output_folder: Path = OUTPUT_FOLDER,  tokenizer_name: str = "bert-base-uncased", max_length: int = 512) -> None:

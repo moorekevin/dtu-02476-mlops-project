@@ -177,3 +177,6 @@ cython_debug/
 #.idea/
 data/raw/mental_disorders_reddit.csv
 /data
+/outputs
+/wandb
+/lightning_logs

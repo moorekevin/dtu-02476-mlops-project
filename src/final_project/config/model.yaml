@@ -1,7 +1,6 @@
-model_name_or_path: "Model",
-learning_rate: 1e-5
+model_name_or_path: "distilbert-base-uncased"
+num_labels: 5
 adam_epsilon: 1e-8
 warmup_steps: 0
 weight_decay: 0.0
-train_batch_size: 32
-eval_batch_size: 32
+seed: 42

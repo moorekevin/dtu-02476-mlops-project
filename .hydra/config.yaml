@@ -1,0 +1,12 @@
+model_name_or_path: distilbert-base-uncased
+num_labels: 5
+adam_epsilon: 1.0e-08
+warmup_steps: 0
+weight_decay: 0.0
+seed: 42
+learning_rate: 0.001
+batch_size: 32
+epochs: 10
+total_training_steps: 1000
+num_workers: 4
+data_percentage: 0.01
