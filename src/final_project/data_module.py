@@ -1,4 +1,4 @@
-from src.final_project.data import MentalDisordersDataset
+from data import MentalDisordersDataset
 from pytorch_lightning import LightningDataModule, seed_everything
 from torch.utils.data import DataLoader, random_split
 import torch

@@ -4,7 +4,7 @@ import torch
 from data_module import MentalDisordersDataModule
 from model import AwesomeModel
 import hydra
-from src.final_project.model import AwesomeModel
+from model import AwesomeModel
 import logging
 import os
 log = logging.getLogger(__name__)
