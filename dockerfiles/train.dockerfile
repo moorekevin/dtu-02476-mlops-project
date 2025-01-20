@@ -50,4 +50,5 @@ RUN pip install . --no-deps --no-cache-dir --verbose
 RUN dvc pull
 
 # Add entrypoint to run scripts
-ENTRYPOINT ["sh", "-c", " python src/final_project/data.py && python src/final_project/train.py && python src/final_project/evaluate.py"]
+ENTRYPOINT ["sh", "-c", " python src/final_project/data.py"]
+# ENTRYPOINT ["sh", "-c", " python src/final_project/data.py && python src/final_project/train.py && python src/final_project/evaluate.py"]
