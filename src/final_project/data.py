@@ -128,6 +128,8 @@ def preprocess(raw_data_path: str, training_data_path: str, testing_data_path,  
         "labels": torch.tensor(df_test["labels"].tolist(), dtype=torch.long),
     }
 
+    log.info(f"I reached here")
+
     # Save both dictionaries with torch.save
     torch.save(train_dict, Path(training_data_path).resolve())
     torch.save(test_dict, Path(testing_data_path).resolve())
