@@ -3,3 +3,7 @@ outs:
   size: 588850172
   hash: md5
   path: mental_disorders_reddit.csv
+  cloud:
+    myremote:
+      etag: 0882b8948290848b031001
+      version_id: '1737370110336002'
