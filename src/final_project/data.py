@@ -1,62 +1,76 @@
 import torch
-from pytorch_lightning import LightningDataModule
+from pytorch_lightning import seed_everything
 from pathlib import Path
 import pandas as pd
 from sklearn.model_selection import train_test_split
-import json
 from transformers import AutoTokenizer
 import typer
-from torch.utils.data import random_split, Dataset, DataLoader
+from torch.utils.data import Dataset
+import hydra
+import logging
+import random
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
-RAW_DATA_PATH = Path("data/raw/mental_disorders_reddit.csv")
-OUTPUT_FOLDER = Path("data/processed").resolve()
-TRAINING_DATA_PATH = OUTPUT_FOLDER / "training_data.csv"
-TESTING_DATA_PATH = OUTPUT_FOLDER / "testing_data.csv"
+log = logging.getLogger(__name__)
 
 
 class MentalDisordersDataset(Dataset):
     """My custom dataset."""
 
-    def __init__(self, train: bool, data_dir: Path = OUTPUT_FOLDER) -> None:
-        self.data_dir = data_dir
+    def __init__(self, data_percentage: float, seed: int, train: bool, training_data_path: str, testing_data_path: str) -> None:
+        self.data_percentage = data_percentage
+        self.seed = seed
         try:
-            print("Loading data from ", self.data_dir)
             if train:
-                self.data_path = TRAINING_DATA_PATH
+                self.data_path = Path(training_data_path).resolve()
+                log.info(f"Loading training data from {self.data_path}")
             else:
-                self.data_path = TESTING_DATA_PATH
-            # Open and read the JSON file
-            # with open(self.data_path, 'r') as file:
-            #     self.df = json.load(file)
-            self.df = pd.read_csv(self.data_path)
+                self.data_path = Path(testing_data_path).resolve()
+                log.info(f"Loading testing data from {self.data_path}")
+
+            data_dict = torch.load(self.data_path, weights_only=False)
+            self.input_ids = data_dict["input_ids"]
+            self.attention_masks = data_dict["attention_mask"]
+            self.labels = data_dict["labels"]
+            # Apply subset logic if data_percentage < 1.0
+            if self.data_percentage < 1.0:
+                self._sample_data()
 
         except FileNotFoundError:
             print("File not found. Did you preprocess the data?")
 
+    def _sample_data(self):
+        """Samples a subset of the data based on the specified percentage."""
+        subset_size = int(len(self.labels) * self.data_percentage)
+        seed_everything(self.seed)
+        indices = random.sample(range(len(self.labels)), subset_size)
+        self.input_ids = [self.input_ids[i] for i in indices]
+        self.attention_masks = [self.attention_masks[i] for i in indices]
+        self.labels = [self.labels[i] for i in indices]
+
     def __len__(self) -> int:
         """Return the length of the dataset."""
-        return len(self.df)
+        return len(self.labels)
 
     def __getitem__(self, index: int):
         """Return a given sample from the dataset."""
-        row = self.df.iloc[index]
-
-        input_ids = torch.tensor(eval(row["input_ids"]), dtype=torch.long)
-        attention_mask = torch.tensor(
-            eval(row["attention_mask"]), dtype=torch.long)
-        label = torch.tensor(row["label"], dtype=torch.long)
-
         return {
-            "input_ids": input_ids,
-            "attention_mask": attention_mask,
-            "labels": label,
+            "input_ids": self.input_ids[index],
+            "attention_mask": self.attention_masks[index],
+            "labels": self.labels[index],
         }
 
 
-def preprocess(raw_data_path: Path = RAW_DATA_PATH, output_folder: Path = OUTPUT_FOLDER,  tokenizer_name: str = "bert-base-uncased", max_length: int = 512) -> None:
-    print("Preprocessing data...")
-    raw_data = pd.read_csv(raw_data_path)
+def preprocess(raw_data_path: str, training_data_path: str, testing_data_path,  tokenizer_name: str = "distilbert-base-uncased", max_length: int = 512) -> None:
+    log.info("Preprocessing data...")
+    raw_data = pd.read_csv(Path(raw_data_path).resolve())
     preprocessed_data = raw_data.copy()
+    ##################
+    # CLEANING LOGIC #
+    ##################
     preprocessed_data.dropna(
         subset=["title", "selftext", "subreddit"], inplace=True)
     # Remove any rows where the selftext is [removed] or [deleted]
@@ -68,54 +82,66 @@ def preprocess(raw_data_path: Path = RAW_DATA_PATH, output_folder: Path = OUTPUT
     # Remove low effort posts under 20 characters
     preprocessed_data = preprocessed_data[preprocessed_data["selftext"].apply(
         len) > 20]
-
+    # Combine title and selftext into text column
     preprocessed_data["text"] = preprocessed_data["title"] + \
         "\n" + preprocessed_data["selftext"]
-
-    # preprocessed_data.rename(
-    #     columns={"subreddit": "label"}, inplace=True)
-
-    # Map string labels to integers
+    # Map subreddit to label
     label_mapping = {label: idx for idx, label in enumerate(
         preprocessed_data["subreddit"].unique())}
-    preprocessed_data["label"] = preprocessed_data["subreddit"].map(
+    preprocessed_data["labels"] = preprocessed_data["subreddit"].map(
         label_mapping)
 
+    ######################
+    # TOKENIZATION LOGIC #
+    ######################
+
     # Tokenize text
+    log.info("Tokenizing text...")
     tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
-    tokens = tokenizer(
-        preprocessed_data["text"].tolist(),
+
+    df_train, df_test = train_test_split(
+        preprocessed_data, test_size=0.1, random_state=42)
+
+    train_tokens = tokenizer(
+        df_train["text"].tolist(),
         truncation=True,
         padding="max_length",
         max_length=max_length,
         return_tensors="pt"
     )
+    train_dict = {
+        "input_ids": train_tokens["input_ids"],
+        "attention_mask": train_tokens["attention_mask"],
+        "labels": torch.tensor(df_train["labels"].tolist(), dtype=torch.long),
+    }
 
-    # Add tokenized data to DataFrame
-    preprocessed_data["input_ids"] = tokens["input_ids"].tolist()
-    preprocessed_data["attention_mask"] = tokens["attention_mask"].tolist()
+    test_tokens = tokenizer(
+        df_test["text"].tolist(),
+        truncation=True,
+        padding="max_length",
+        max_length=max_length,
+        return_tensors="pt"
+    )
+    test_dict = {
+        "input_ids": test_tokens["input_ids"],
+        "attention_mask": test_tokens["attention_mask"],
+        "labels": torch.tensor(df_test["labels"].tolist(), dtype=torch.long),
+    }
 
-    # Calculate percentages for each unique value
-    label_percentage = preprocessed_data['label'].value_counts(
-        normalize=True) * 100
-    label_percentage = label_percentage.round(2)
-    print("Label percentages:")
-    print(label_percentage)
+    # Save both dictionaries with torch.save
+    torch.save(train_dict, Path(training_data_path).resolve())
+    torch.save(test_dict, Path(testing_data_path).resolve())
 
-    # Save the data
-    df_train, df_test = train_test_split(
-        preprocessed_data, test_size=0.1, random_state=42)
+    log.info(
+        f"Saved train and test splits at {training_data_path} and {testing_data_path}")
+    log.info(f"Label mapping: {label_mapping}")
 
-    # Convert to csv
-    with open(output_folder / "label_mapping.json", "w") as f:
-        json.dump(label_mapping, f)
-    df_train.to_csv(TRAINING_DATA_PATH, index=False)
 
-    df_test.to_csv(TESTING_DATA_PATH, index=False)
-
-    print(f"Saved train and test splits at {OUTPUT_FOLDER}")
-    print(f"Label mapping: {label_mapping}")
+@hydra.main(version_base="1.1", config_path="config", config_name="data.yaml")
+def main(cfg):
+    preprocess(raw_data_path=cfg.raw_data_path, training_data_path=cfg.training_data_path,
+               testing_data_path=cfg.testing_data_path, tokenizer_name=cfg.tokenizer_name, max_length=cfg.max_length)
 
 
 if __name__ == "__main__":
-    typer.run(preprocess)
+    main()

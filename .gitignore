@@ -180,3 +180,4 @@ data/raw/mental_disorders_reddit.csv
 /outputs
 /wandb
 /lightning_logs
+/models

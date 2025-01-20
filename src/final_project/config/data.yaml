@@ -1,0 +1,15 @@
+hydra:
+  run:
+    dir: .
+
+seed: 42
+raw_data_path: "data/raw/mental_disorders_reddit.csv"
+output_folder: "data/processed"
+training_data_path: "${output_folder}/training_data.pt"
+testing_data_path: "${output_folder}/testing_data.pt"
+tokenizer_name: "distilbert-base-uncased"
+max_length: 512
+
+batch_size: 32
+num_workers: 4
+data_percentage: 0.01
