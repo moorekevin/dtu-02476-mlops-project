@@ -2,6 +2,7 @@ import pytest
 import torch
 import pandas as pd
 
+
 from pathlib import Path
 from unittest.mock import patch
 from typing import Dict, Any
@@ -58,7 +59,7 @@ def saved_train_test_files(tmp_path, small_tensor_dict) -> (Path, Path):
 
     return train_path, test_path
 
-
+@pytest.mark.filterwarnings("ignore:You are using `torch.load`.*:FutureWarning")
 def test_preprocess_creates_files(minimal_csv, tmp_path):
     """
     Test that `preprocess()` successfully reads a CSV and
