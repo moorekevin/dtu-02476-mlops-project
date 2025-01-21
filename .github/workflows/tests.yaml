@@ -36,5 +36,5 @@ jobs:
 
       - name: Run tests & coverage
         run: |
-          coverage run --disable-warnings -m pytest tests/ || true
+          coverage run -m pytest tests/ || true
           coverage report -m
