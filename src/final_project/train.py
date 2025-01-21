@@ -1,10 +1,8 @@
-# train.py
 import pytorch_lightning as pl
 import torch
-from data_module import MentalDisordersDataModule
-from model import AwesomeModel
+from final_project import MentalDisordersDataModule
+from final_project import AwesomeModel
 import hydra
-from model import AwesomeModel
 import logging
 import os
 log = logging.getLogger(__name__)
@@ -16,6 +14,7 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available(
 def train(model, cfg):
     log.info("Starting training")
     log.info(f"{cfg.learning_rate=}, {cfg.batch_size=}, {cfg.epochs=}")
+    
     # Instantiate DataModule
     dm = MentalDisordersDataModule(
         cfg=cfg
@@ -24,14 +23,7 @@ def train(model, cfg):
     # Make sure to call prepare_data() + setup() to figure out #labels if needed
     dm.setup("fit")  # get train/validation split
 
-    # We can refine total_training_steps if we want a scheduler
-    # total_steps = (
-    #     int(0.01 * len(dm.train_dataloader()) * epochs)
-    # )
-    # model.hparams.total_training_steps = total_steps
-
     # Create a trainer
-    # Inside main() function after setting up the model
     trainer = pl.Trainer(
         max_epochs=cfg.epochs,
         accelerator="auto",

@@ -129,18 +129,18 @@ hydra:
   runtime:
     version: 1.3.2
     version_base: '1.1'
-    cwd: /Users/kevinmoore/git_repositories/dtu-02476-mlops/dtu-02476-mlops-project
+    cwd: /Users/s204684/MLOps/project/dtu-02476-mlops-project
     config_sources:
     - path: hydra.conf
       schema: pkg
       provider: hydra
-    - path: /Users/kevinmoore/git_repositories/dtu-02476-mlops/dtu-02476-mlops-project/src/final_project/config
+    - path: /Users/s204684/MLOps/project/dtu-02476-mlops-project/src/final_project/config
       schema: file
       provider: main
     - path: ''
       schema: structured
       provider: schema
-    output_dir: /Users/kevinmoore/git_repositories/dtu-02476-mlops/dtu-02476-mlops-project
+    output_dir: /Users/s204684/MLOps/project/dtu-02476-mlops-project
     choices:
       hydra/env: default
       hydra/callbacks: null

@@ -7,8 +7,7 @@ import pytorch_lightning as pl
 from pytorch_lightning import seed_everything
 import hydra
 
-from data_module import MentalDisordersDataModule
-from model import AwesomeModel
+from final_project import MentalDisordersDataModule, AwesomeModel
 
 log = logging.getLogger(__name__)
 
