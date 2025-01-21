@@ -40,7 +40,7 @@ class MentalDisordersDataset(Dataset):
                 self._sample_data()
 
         except FileNotFoundError:
-            print("File not found. Did you preprocess the data?")
+            logging.error("File not found. Did you preprocess the data?")
 
     def _sample_data(self):
         """Samples a subset of the data based on the specified percentage."""
@@ -90,7 +90,23 @@ def preprocess(raw_data_path: str, training_data_path: str, testing_data_path,  
         preprocessed_data["subreddit"].unique())}
     preprocessed_data["labels"] = preprocessed_data["subreddit"].map(
         label_mapping)
+    
+    logging.info(f"Old shape: {preprocessed_data.shape}")
+    
+    ##########################
+    # UNDERSAMPLING LOGIC    #
+    ##########################
+    # 1. Group by labels
+    grouped = preprocessed_data.groupby("labels")
+    
+    # 2. Find the smallest class size
+    min_count = grouped.size().min()
+    
+    # 3. Undersample each group to that smallest size
+    preprocessed_data = grouped.apply(lambda x: x.sample(n=min_count, random_state=42)).reset_index(drop=True)
 
+    logging.info(f"New shape: {preprocessed_data.shape}")
+    
     ######################
     # TOKENIZATION LOGIC #
     ######################
@@ -98,9 +114,12 @@ def preprocess(raw_data_path: str, training_data_path: str, testing_data_path,  
     # Tokenize text
     log.info("Tokenizing text...")
     tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
+    log.info("Tokenizer created")
 
     df_train, df_test = train_test_split(
         preprocessed_data, test_size=0.1, random_state=42)
+    
+    log.info("Data split completed")
 
     train_tokens = tokenizer(
         df_train["text"].tolist(),
@@ -109,6 +128,9 @@ def preprocess(raw_data_path: str, training_data_path: str, testing_data_path,  
         max_length=max_length,
         return_tensors="pt"
     )
+
+    log.info("Trained data tokenized")
+
     train_dict = {
         "input_ids": train_tokens["input_ids"],
         "attention_mask": train_tokens["attention_mask"],
@@ -122,13 +144,16 @@ def preprocess(raw_data_path: str, training_data_path: str, testing_data_path,  
         max_length=max_length,
         return_tensors="pt"
     )
+
+    log.info("Test data tokenized")
+
     test_dict = {
         "input_ids": test_tokens["input_ids"],
         "attention_mask": test_tokens["attention_mask"],
         "labels": torch.tensor(df_test["labels"].tolist(), dtype=torch.long),
     }
 
-    log.info(f"I reached here")
+    log.info(f"Saving...")
 
     # Save both dictionaries with torch.save
     torch.save(train_dict, Path(training_data_path).resolve())
