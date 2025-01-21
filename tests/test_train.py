@@ -1,5 +1,6 @@
 import pytest
 from unittest.mock import patch, MagicMock
+import torch
 
 from omegaconf import OmegaConf
 
@@ -74,6 +75,7 @@ def test_train_function(mock_torch_save, mock_trainer_cls, mock_data_module_cls,
     assert args[1] == "models/model.pth"
 
 @patch("final_project.train.train")
+@patch("final_project.train.DEVICE", torch.device("cpu"))
 def test_train_main(mock_train, mock_cfg):
     """
     Test the 'main' entry point to ensure it calls train(...) with 

@@ -1,5 +1,3 @@
-# tests/test_evaluate.py
-
 import pytest
 import os
 import torch
@@ -29,6 +27,7 @@ def mock_eval_cfg(tmp_path):
     }
     return OmegaConf.create(cfg_dict)
 
+@patch("final_project.evaluate.DEVICE", torch.device("cpu"))
 def test_evaluate_file_not_found(mock_eval_cfg):
     """
     Test that evaluate raises FileNotFoundError
@@ -44,6 +43,7 @@ def test_evaluate_file_not_found(mock_eval_cfg):
 @patch("final_project.evaluate.pl.Trainer")
 @patch("final_project.evaluate.os.path.exists", return_value=True)
 @patch("final_project.evaluate.torch.load")
+@patch("final_project.evaluate.DEVICE", torch.device("cpu"))
 def test_evaluate_main(
     mock_torch_load,
     mock_os_path_exists,
