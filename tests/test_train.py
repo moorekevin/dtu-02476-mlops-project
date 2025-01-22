@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, ANY
 import torch
 
 from omegaconf import OmegaConf
@@ -8,6 +8,7 @@ from omegaconf import OmegaConf
 from final_project.train import train, main as train_main
 # For creating a mock model
 from final_project.model import AwesomeModel
+
 
 @pytest.fixture
 def mock_cfg(tmp_path):
@@ -27,8 +28,11 @@ def mock_cfg(tmp_path):
         "adam_epsilon": 1e-8,
         "warmup_steps": 0,
         "total_training_steps": 10,
+        "wandb_project_name": "test_project",
+        "wandb_entity": "test_entity",
     }
     return OmegaConf.create(cfg_dict)
+
 
 @patch("final_project.train.MentalDisordersDataModule")
 @patch("final_project.train.pl.Trainer")
@@ -63,8 +67,9 @@ def test_train_function(mock_torch_save, mock_trainer_cls, mock_data_module_cls,
         max_epochs=mock_cfg.epochs,
         accelerator="auto",
         devices="auto",
-        logger=True,
+        logger=ANY,
         log_every_n_steps=10,
+        callbacks=ANY,
     )
     mock_trainer.fit.assert_called_once_with(model, mock_dm_instance)
 
@@ -73,6 +78,7 @@ def test_train_function(mock_torch_save, mock_trainer_cls, mock_data_module_cls,
     args, kwargs = mock_torch_save.call_args
     assert args[0] == {"weights": "some_dummy_weights"}
     assert args[1] == "models/model.pth"
+
 
 @patch("final_project.train.train")
 @patch("final_project.train.DEVICE", torch.device("cpu"))
@@ -94,5 +100,6 @@ def test_train_main(mock_train, mock_cfg):
     args, kwargs = mock_train.call_args
     model_arg = args[0]
     passed_cfg = args[1]
-    assert isinstance(model_arg, AwesomeModel), "Expected an AwesomeModel to be constructed."
+    assert isinstance(
+        model_arg, AwesomeModel), "Expected an AwesomeModel to be constructed."
     assert passed_cfg == mock_cfg, "Expected the same cfg to be passed to train()."
