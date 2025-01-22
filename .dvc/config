@@ -1,5 +1,4 @@
 [core]
     remote = myremote
 ['remote "myremote"']
-    url = gs://mlops-bucket-1999/
-    version_aware = true
+    url = gs://mlops-bucket-1999
