@@ -7,8 +7,7 @@ from transformers import (
 from torch.optim import AdamW
 
 from torchmetrics.classification import Accuracy
-from pytorch_lightning import LightningModule, seed_everything, Trainer
-from transformers import AutoModelForSequenceClassification
+from pytorch_lightning import LightningModule, seed_everything
 from omegaconf import OmegaConf
 import hydra
 import logging
