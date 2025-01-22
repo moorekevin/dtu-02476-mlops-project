@@ -1,6 +1,6 @@
 defaults:
   - model
 
-learning_rate: 1e-3
-epochs: 1
+learning_rate: 2e-4
+epochs: 20
 total_training_steps: 1000
