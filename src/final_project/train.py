@@ -1,10 +1,14 @@
+import sys
 import pytorch_lightning as pl
+from pytorch_lightning.loggers import WandbLogger
+from pytorch_lightning.callbacks import ModelCheckpoint
 import torch
 from final_project import MentalDisordersDataModule
 from final_project import AwesomeModel
 import hydra
 import logging
 import os
+import wandb
 log = logging.getLogger(__name__)
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available(
@@ -12,9 +16,21 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available(
 
 
 def train(model, cfg):
+    wandb_logger = WandbLogger(
+        project="dtu-02476-final-project",
+        entity="moorekevin-",
+        log_model=True
+    )
+    checkpoint_callback = ModelCheckpoint(
+        dirpath="models/checkpoints",
+        filename="{epoch}-{val_loss:.2f}",
+        save_top_k=3,                       # Number of best checkpoints to keep
+        monitor="val_loss",                 # Metric to monitor
+        mode="min",
+    )
     log.info("Starting training")
     log.info(f"{cfg.learning_rate=}, {cfg.batch_size=}, {cfg.epochs=}")
-    
+
     # Instantiate DataModule
     dm = MentalDisordersDataModule(
         cfg=cfg
@@ -28,7 +44,8 @@ def train(model, cfg):
         max_epochs=cfg.epochs,
         accelerator="auto",
         devices="auto",
-        logger=True,
+        logger=wandb_logger,
+        callbacks=[checkpoint_callback],
         log_every_n_steps=10,
     )
 
