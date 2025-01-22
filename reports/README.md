@@ -287,7 +287,11 @@ For example, imagine a function that processes user input for a form. Our test m
 >
 > Answer:
 
---- question 10 fill here ---
+At the start of the project, we didn’t use branches or pull requests much because we wanted to work faster and avoid overhead. Now, we primarily use them for running status checks before merging changes into the main branch. This setup works, but it could be improved.
+
+Using branches and pull requests consistently would make collaboration smoother. For example, each team member could have worked on their own branch for specific features or fixes. If someone was adding a new data processing step, they could do that in a separate branch without worrying about breaking the training pipeline in the main branch. Once finished, they could create a pull request, allowing the team to review the code, suggest improvements, and make sure everything works as expected before merging it.
+
+This approach not only prevents accidental errors but also encourages better communication and keeps the main branch stable. It’s especially helpful in bigger teams or long-term projects where tracking changes and maintaining a clean codebase is critical.
 
 ### Question 11
 
@@ -323,7 +327,11 @@ For example, imagine a function that processes user input for a form. Our test m
 >
 > Answer:
 
---- question 12 fill here ---
+We configured our experiments using Hydra and tracked them with Weights & Biases (W&B). Hydra’s configuration files (fx train.yaml and data.yaml) store key parameters such as learning rate, batch size, and file paths, which makes it easy to manage and modify settings.
+
+To run an experiment, you can run: `python src/final_project/train.py`
+
+Hydra automatically loads the settings and w&b logs everything from metrics to hyperparameters and model checkpoints. This lets us track progress and compare results without manually keeping records.
 
 ### Question 13
 
@@ -338,7 +346,13 @@ For example, imagine a function that processes user input for a form. Our test m
 >
 > Answer:
 
---- question 13 fill here ---
+We again relied on a combination of Hydra and W&B. Hydra organizes all configurations in YAML files, ensuring every experiment’s settings are saved and easy to reuse. W&B logs all the important details—metrics, hyperparameters, and even the outputs like model files or loss curves—so we can always go back and review what worked (or often didn’t).
+
+We also used a fixed random seed (seed: 42) throughout the project to ensure consistency across runs. If someone wants to reproduce an experiment, they can simply:
+	1.	Grab the right configuration file (e.g., train.yaml).
+	2.	Check W&B for the exact metrics and settings.
+	3.	Run the experiment again
+
 
 ### Question 14
 
