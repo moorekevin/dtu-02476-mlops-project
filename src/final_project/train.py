@@ -8,7 +8,6 @@ from final_project import AwesomeModel
 import hydra
 import logging
 import os
-import wandb
 log = logging.getLogger(__name__)
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available(
