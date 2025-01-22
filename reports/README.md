@@ -163,8 +163,16 @@ We chose the Hugging Face Transformers library as our third-party framework for 
 >
 > Answer:
 
---- question 4 fill here ---
+We used pip to manage dependencies in our project, and both requirements.txt for production dependencies and requirements_dev.txt for development-specific tools. The requirements files contains a complete list of the packages and their specific versions needed to replicate our environment. This file was auto-generated using the command `pip freeze > requirements.txt` after ensuring all required dependencies were installed.
 
+To get an exact copy of our environment, onr would need to follow these steps:
+1.	Clone the project repository: `git clone https://github.com/moorekevin/dtu-02476-mlops-project`
+2.	CD to the project directory
+3.	Create a virtual environment: python -m venv env.
+4.	Activate the virtual environment: On Windows: `env\Scripts\activate` or On macOS/Linux: `source env/bin/activate`
+5.	Install dependencies: `pip install -r requirements.txt`.
+6.	(Optional) Install development dependencies: pip install -r requirements_dev.txt.
+7.	
 ### Question 5
 
 > **We expect that you initialized your project using the cookiecutter template. Explain the overall structure of your**
@@ -194,7 +202,11 @@ We chose the Hugging Face Transformers library as our third-party framework for 
 >
 > Answer:
 
---- question 6 fill here ---
+We implemented rules for code quality and formatting using Ruff, a fast Python linter and formatter. These rules were enforced automatically via a GitHub Actions workflow (codecheck.yaml) that runs on every push or pull request to the main branch. The workflow ensures that all code adheres to predefined quality standards and is properly formatted before merging. Additionally, the workflow uses Python 3.11 and caches dependencies to optimize performance.
+
+For typing, we used Python’s type hints and encouraged their use throughout the project to improve code clarity and reduce runtime errors. 
+
+These concepts matter in larger projects because they prevent chaos as the codebase grows. For example, without proper formatting or typing, debugging a simple error like passing a string instead of an integer can waste hours. Good documentation means someone new to the project can quickly understand a function without needing to trace the entire code. Ultimately, these practices save time and make the codebase easier to work with for everyone involved.
 
 ## Version control
 
@@ -213,7 +225,13 @@ We chose the Hugging Face Transformers library as our third-party framework for 
 >
 > Answer:
 
---- question 7 fill here ---
+In total, we implemented 5 tests focusing on the core functionality (aka critical parts) of our project:
+1. test_data_module: Ensures the data module initializes correctly and handles data loading and splitting.
+2. test_data: Validates data preprocessing, including creating tensors and handling edge cases like missing or corrupted data.
+3. test_evaluate: Checks that the evaluation process correctly computes metrics and handles predictions.
+4. test_model: Ensures the model initializes, trains, and produces expected outputs without errors.
+5. test_train: Verifies the training pipeline, including integration with data modules and saving the trained model.
+
 
 ### Question 8
 
@@ -228,7 +246,9 @@ We chose the Hugging Face Transformers library as our third-party framework for 
 >
 > Answer:
 
---- question 8 fill here ---
+The total code coverage of our project is 87%, which is a good indicator that most of our code is being tested. However, even if we achieved 100% coverage, it wouldn’t mean the code is completely error-free. Code coverage measures how much of the code runs during tests, but it doesn’t ensure all edge cases or real-world scenarios are considered.
+
+For example, imagine a function that processes user input for a form. Our test might check that the function works fine when given valid input, like “John Doe,” but it might not test what happens if the input is an empty string, contains special characters, or is unexpectedly large. These edge cases could still cause the code to break, even if the function is 100% covered by tests.
 
 ### Question 9
 
@@ -577,4 +597,11 @@ We chose the Hugging Face Transformers library as our third-party framework for 
 > *We have used ChatGPT to help debug our code. Additionally, we used GitHub Copilot to help write some of our code.*
 > Answer:
 
---- question 31 fill here ---
+- Student s204462 was in charge of developing of setting up the initial cookie cutter project
+- Student s234061 was in charge of the docker containers for training our applications.
+- Student s233022 was in charge of training our models in the cloud and deploying them afterwards.
+- Student s204684 was in charge of writing the evaluation
+- Students s234061 and s233022 worked together on the unit tests
+- Students s204684 and s204462 worked together on the initial data, model and training code
+- However all members contributed to code equally and helped each other through Zoom meetings.
+- We have used ChatGPT to help debug our code. Additionally, we used GitHub Copilot to help write some of our code.
