@@ -161,8 +161,8 @@ def preprocess(raw_data_path: str, training_data_path: str, testing_data_path,  
     # Save both dictionaries with torch.save
     # torch.save(train_dict, Path(training_data_path).resolve())
     # torch.save(test_dict, Path(testing_data_path).resolve())
-    torch.save(train_dict, Path(training_data_path).resolve())
-    torch.save(test_dict, Path(testing_data_path).resolve())
+    torch.save(train_dict, 'gs://mlops-bucket-1999/data/processed/training_data.pt')
+    torch.save(test_dict, 'gs://mlops-bucket-1999/data/processed/test_data.pt')
 
 
     log.info(
