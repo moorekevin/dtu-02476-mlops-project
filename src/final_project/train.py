@@ -15,8 +15,8 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available(
 
 def train(model, cfg):
     wandb_logger = WandbLogger(
-        project="dtu-02476-final-project",
-        entity="moorekevin-",
+        project=cfg.wandb_project_name,
+        entity=cfg.wandb_entity,
         log_model=True
     )
     checkpoint_callback = ModelCheckpoint(

@@ -48,37 +48,37 @@ will check the repositories and the code to verify your answers.
 
 ### Week 1
 
-* [ ] Create a git repository (M5)
-* [ ] Make sure that all team members have write access to the GitHub repository (M5)
-* [ ] Create a dedicated environment for you project to keep track of your packages (M2)
-* [ ] Create the initial file structure using cookiecutter with an appropriate template (M6)
-* [ ] Fill out the `data.py` file such that it downloads whatever data you need and preprocesses it (if necessary) (M6)
-* [ ] Add a model to `model.py` and a training procedure to `train.py` and get that running (M6)
-* [ ] Remember to fill out the `requirements.txt` and `requirements_dev.txt` file with whatever dependencies that you
+* [x] Create a git repository (M5)
+* [x] Make sure that all team members have write access to the GitHub repository (M5)
+* [x] Create a dedicated environment for you project to keep track of your packages (M2)
+* [x] Create the initial file structure using cookiecutter with an appropriate template (M6)
+* [x] Fill out the `data.py` file such that it downloads whatever data you need and preprocesses it (if necessary) (M6)
+* [x] Add a model to `model.py` and a training procedure to `train.py` and get that running (M6)
+* [x] Remember to fill out the `requirements.txt` and `requirements_dev.txt` file with whatever dependencies that you
     are using (M2+M6)
-* [ ] Remember to comply with good coding practices (`pep8`) while doing the project (M7)
-* [ ] Do a bit of code typing and remember to document essential parts of your code (M7)
-* [ ] Setup version control for your data or part of your data (M8)
+* [x] Remember to comply with good coding practices (`pep8`) while doing the project (M7)
+* [x] Do a bit of code typing and remember to document essential parts of your code (M7)
+* [x] Setup version control for your data or part of your data (M8)
 * [ ] Add command line interfaces and project commands to your code where it makes sense (M9)
-* [ ] Construct one or multiple docker files for your code (M10)
-* [ ] Build the docker files locally and make sure they work as intended (M10)
+* [x] Construct one or multiple docker files for your code (M10)
+* [x] Build the docker files locally and make sure they work as intended (M10)
 * [ ] Write one or multiple configurations files for your experiments (M11)
-* [ ] Used Hydra to load the configurations and manage your hyperparameters (M11)
+* [x] Used Hydra to load the configurations and manage your hyperparameters (M11)
 * [ ] Use profiling to optimize your code (M12)
-* [ ] Use logging to log important events in your code (M14)
-* [ ] Use Weights & Biases to log training progress and other important metrics/artifacts in your code (M14)
+* [x] Use logging to log important events in your code (M14)
+* [x] Use Weights & Biases to log training progress and other important metrics/artifacts in your code (M14)
 * [ ] Consider running a hyperparameter optimization sweep (M14)
-* [ ] Use PyTorch-lightning (if applicable) to reduce the amount of boilerplate in your code (M15)
+* [x] Use PyTorch-lightning (if applicable) to reduce the amount of boilerplate in your code (M15)
 
 ### Week 2
 
-* [ ] Write unit tests related to the data part of your code (M16)
-* [ ] Write unit tests related to model construction and or model training (M16)
-* [ ] Calculate the code coverage (M16)
+* [x] Write unit tests related to the data part of your code (M16)
+* [x] Write unit tests related to model construction and or model training (M16)
+* [x] Calculate the code coverage (M16)
 * [ ] Get some continuous integration running on the GitHub repository (M17)
 * [ ] Add caching and multi-os/python/pytorch testing to your continuous integration (M17)
-* [ ] Add a linting step to your continuous integration (M17)
-* [ ] Add pre-commit hooks to your version control setup (M18)
+* [x] Add a linting step to your continuous integration (M17)
+* [x] Add pre-commit hooks to your version control setup (M18)
 * [ ] Add a continues workflow that triggers when data changes (M19)
 * [ ] Add a continues workflow that triggers when changes to the model registry is made (M19)
 * [ ] Create a data storage in GCP Bucket for your data and link this with your data version control setup (M21)
@@ -108,8 +108,8 @@ will check the repositories and the code to verify your answers.
 * [ ] Publish the documentation to GitHub Pages (M32)
 * [ ] Revisit your initial project description. Did the project turn out as you wanted?
 * [ ] Create an architectural diagram over your MLOps pipeline
-* [ ] Make sure all group members have an understanding about all parts of the project
-* [ ] Uploaded all your code to GitHub
+* [x] Make sure all group members have an understanding about all parts of the project
+* [x] Uploaded all your code to GitHub
 
 ## Group information
 
@@ -118,7 +118,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 1 fill here ---
+MLOPS 46
 
 ### Question 2
 > **Enter the study number for each member in the group**
@@ -129,7 +129,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 2 fill here ---
+ s204462, s234061, s233022, s204684
 
 ### Question 3
 > **A requirement to the project is that you include a third-party package not covered in the course. What framework**
@@ -143,7 +143,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 3 fill here ---
+We chose the Hugging Face Transformers library as our third-party framework for this project. This library provides access to pre-trained transformer models like BERT and RoBERTa, which are highly effective for natural language processing (NLP) tasks. In our project, we used these models to fine-tune them on the title and selftext (body) of Reddit posts, enabling the classification of posts into five distinct mental health disorder categories. The framework simplified the implementation of complex NLP techniques by offering ready-to-use models and functionality, such as tokenization and training pipelines. This allowed us to focus on optimizing the classification task rather than building models from scratch, significantly enhancing our project’s efficiency and performance.
 
 ## Coding environment
 
@@ -163,8 +163,16 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 4 fill here ---
+We used pip to manage dependencies in our project, and both requirements.txt for production dependencies and requirements_dev.txt for development-specific tools. The requirements files contains a complete list of the packages and their specific versions needed to replicate our environment. This file was auto-generated using the command `pip freeze > requirements.txt` after ensuring all required dependencies were installed.
 
+To get an exact copy of our environment, onr would need to follow these steps:
+1.	Clone the project repository: `git clone https://github.com/moorekevin/dtu-02476-mlops-project`
+2.	CD to the project directory
+3.	Create a virtual environment: python -m venv env.
+4.	Activate the virtual environment: On Windows: `env\Scripts\activate` or On macOS/Linux: `source env/bin/activate`
+5.	Install dependencies: `pip install -r requirements.txt`.
+6.	(Optional) Install development dependencies: pip install -r requirements_dev.txt.
+7.	
 ### Question 5
 
 > **We expect that you initialized your project using the cookiecutter template. Explain the overall structure of your**
@@ -179,8 +187,17 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 5 fill here ---
+We utilized the cookiecutter template but we made some adjustments to better align the structure with our needs:
+- src/: The core of the project is here, containing all modules for data processing, data loading, model definition, training, and evaluation.
+- src/final_project/config/: We moved all configuration files (.yaml) into this directory from the original configs/ folder. This keeps configurations closer to the relevant source code for better organization.
+- dockerfiles/: Maintained for Docker image creation, simplifying containerization for training and deployment.
+- tests/: Contains unit tests for key modules to ensure reliability and early bug detection.
 
+Deviations:
+1. Removed configs/: Centralized configurations in src/final_project/config/.
+2.	Removed notebooks/: Since we didn’t use Jupyter notebooks, this folder was unnecessary and removed.
+3.	Extended .gitignore: Added entries for runtime artifacts (e.g., lightning_logs/, .hydra/) and user-specific outputs to avoid cluttering the repository with changes caused by individual users running the code. which helped improve collaboration and version control
+ 
 ### Question 6
 
 > **Did you implement any rules for code quality and format? What about typing and documentation? Additionally,**
@@ -194,7 +211,11 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 6 fill here ---
+We implemented rules for code quality and formatting using Ruff, a fast Python linter and formatter. These rules were enforced automatically via a GitHub Actions workflow (codecheck.yaml) that runs on every push or pull request to the main branch. The workflow ensures that all code adheres to predefined quality standards and is properly formatted before merging. Additionally, the workflow uses Python 3.11 and caches dependencies to optimize performance.
+
+For typing, we used Python’s type hints and encouraged their use throughout the project to improve code clarity and reduce runtime errors. 
+
+These concepts matter in larger projects because they prevent chaos as the codebase grows. For example, without proper formatting or typing, debugging a simple error like passing a string instead of an integer can waste hours. Good documentation means someone new to the project can quickly understand a function without needing to trace the entire code. Ultimately, these practices save time and make the codebase easier to work with for everyone involved.
 
 ## Version control
 
@@ -213,7 +234,13 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 7 fill here ---
+In total, we implemented 5 tests focusing on the core functionality (aka critical parts) of our project:
+1. test_data_module: Ensures the data module initializes correctly and handles data loading and splitting.
+2. test_data: Validates data preprocessing, including creating tensors and handling edge cases like missing or corrupted data.
+3. test_evaluate: Checks that the evaluation process correctly computes metrics and handles predictions.
+4. test_model: Ensures the model initializes, trains, and produces expected outputs without errors.
+5. test_train: Verifies the training pipeline, including integration with data modules and saving the trained model.
+
 
 ### Question 8
 
@@ -228,7 +255,9 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 8 fill here ---
+The total code coverage of our project is 87%, which is a good indicator that most of our code is being tested. However, even if we achieved 100% coverage, it wouldn’t mean the code is completely error-free. Code coverage measures how much of the code runs during tests, but it doesn’t ensure all edge cases or real-world scenarios are considered.
+
+For example, imagine a function that processes user input for a form. Our test might check that the function works fine when given valid input, like “John Doe,” but it might not test what happens if the input is an empty string, contains special characters, or is unexpectedly large. These edge cases could still cause the code to break, even if the function is 100% covered by tests.
 
 ### Question 9
 
@@ -258,7 +287,11 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 10 fill here ---
+At the start of the project, we didn’t use branches or pull requests much because we wanted to work faster and avoid overhead. Now, we primarily use them for running status checks before merging changes into the main branch. This setup works, but it could be improved.
+
+Using branches and pull requests consistently would make collaboration smoother. For example, each team member could have worked on their own branch for specific features or fixes. If someone was adding a new data processing step, they could do that in a separate branch without worrying about breaking the training pipeline in the main branch. Once finished, they could create a pull request, allowing the team to review the code, suggest improvements, and make sure everything works as expected before merging it.
+
+This approach not only prevents accidental errors but also encourages better communication and keeps the main branch stable. It’s especially helpful in bigger teams or long-term projects where tracking changes and maintaining a clean codebase is critical.
 
 ### Question 11
 
@@ -294,7 +327,11 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 12 fill here ---
+We configured our experiments using Hydra and tracked them with Weights & Biases (W&B). Hydra’s configuration files (fx train.yaml and data.yaml) store key parameters such as learning rate, batch size, and file paths, which makes it easy to manage and modify settings.
+
+To run an experiment, you can run: `python src/final_project/train.py`
+
+Hydra automatically loads the settings and w&b logs everything from metrics to hyperparameters and model checkpoints. This lets us track progress and compare results without manually keeping records.
 
 ### Question 13
 
@@ -309,7 +346,13 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 13 fill here ---
+We again relied on a combination of Hydra and W&B. Hydra organizes all configurations in YAML files, ensuring every experiment’s settings are saved and easy to reuse. W&B logs all the important details—metrics, hyperparameters, and even the outputs like model files or loss curves—so we can always go back and review what worked (or often didn’t).
+
+We also used a fixed random seed (seed: 42) throughout the project to ensure consistency across runs. If someone wants to reproduce an experiment, they can simply:
+	1.	Grab the right configuration file (e.g., train.yaml).
+	2.	Check W&B for the exact metrics and settings.
+	3.	Run the experiment again
+
 
 ### Question 14
 
@@ -577,4 +620,11 @@ will check the repositories and the code to verify your answers.
 > *We have used ChatGPT to help debug our code. Additionally, we used GitHub Copilot to help write some of our code.*
 > Answer:
 
---- question 31 fill here ---
+- Student s204462 was in charge of developing of setting up the initial cookie cutter project
+- Student s234061 was in charge of the docker containers for training our applications.
+- Student s233022 was in charge of training our models in the cloud and deploying them afterwards.
+- Student s204684 was in charge of writing the evaluation
+- Students s234061 and s233022 worked together on the unit tests
+- Students s204684 and s204462 worked together on the initial data, model and training code
+- However all members contributed to code equally and helped each other through Zoom meetings.
+- We have used ChatGPT to help debug our code. Additionally, we used GitHub Copilot to help write some of our code.

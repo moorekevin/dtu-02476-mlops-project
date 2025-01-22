@@ -4,3 +4,5 @@ defaults:
 learning_rate: 2e-4
 epochs: 20
 total_training_steps: 1000
+wandb_project_name: "dtu-02476-mlops-project"
+wandb_entity: "moorekevin-"
