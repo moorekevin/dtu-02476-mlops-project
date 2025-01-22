@@ -44,7 +44,7 @@ def train(model, cfg):
         devices="auto",
         logger=wandb_logger,
         callbacks=[checkpoint_callback],
-        log_every_n_steps=10,
+        log_every_n_steps=1,
     )
 
     # Fit
