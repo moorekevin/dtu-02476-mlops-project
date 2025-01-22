@@ -1,4 +1,3 @@
-import sys
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.callbacks import ModelCheckpoint
@@ -8,7 +7,6 @@ from final_project import AwesomeModel
 import hydra
 import logging
 import os
-import wandb
 log = logging.getLogger(__name__)
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available(
