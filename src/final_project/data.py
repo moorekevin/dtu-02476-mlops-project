@@ -65,7 +65,11 @@ class MentalDisordersDataset(Dataset):
 
 def preprocess(raw_data_path: str, training_data_path: str, testing_data_path,  tokenizer_name: str = "distilbert-base-uncased", max_length: int = 512) -> None:
     log.info("Preprocessing data...")
-    raw_data = pd.read_csv(Path(raw_data_path).resolve())
+    # raw_data = pd.read_csv(Path(raw_data_path).resolve())# Access the public GCS bucket without authentication
+    raw_data = pd.read_csv(
+        'gs://mlops-bucket-1999/data/raw/mental_disorders_reddit.csv',
+        storage_options={'anon': True}
+    )
     preprocessed_data = raw_data.copy()
     ##################
     # CLEANING LOGIC #
@@ -155,8 +159,11 @@ def preprocess(raw_data_path: str, training_data_path: str, testing_data_path,  
     log.info("Saving...")
 
     # Save both dictionaries with torch.save
+    # torch.save(train_dict, Path(training_data_path).resolve())
+    # torch.save(test_dict, Path(testing_data_path).resolve())
     torch.save(train_dict, Path(training_data_path).resolve())
     torch.save(test_dict, Path(testing_data_path).resolve())
+
 
     log.info(
         f"Saved train and test splits at {training_data_path} and {testing_data_path}")
