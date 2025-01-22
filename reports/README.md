@@ -187,8 +187,17 @@ To get an exact copy of our environment, onr would need to follow these steps:
 >
 > Answer:
 
---- question 5 fill here ---
+We utilized the cookiecutter template but we made some adjustments to better align the structure with our needs:
+- src/: The core of the project is here, containing all modules for data processing, data loading, model definition, training, and evaluation.
+- src/final_project/config/: We moved all configuration files (.yaml) into this directory from the original configs/ folder. This keeps configurations closer to the relevant source code for better organization.
+- dockerfiles/: Maintained for Docker image creation, simplifying containerization for training and deployment.
+- tests/: Contains unit tests for key modules to ensure reliability and early bug detection.
 
+Deviations:
+1. Removed configs/: Centralized configurations in src/final_project/config/.
+2.	Removed notebooks/: Since we didn’t use Jupyter notebooks, this folder was unnecessary and removed.
+3.	Extended .gitignore: Added entries for runtime artifacts (e.g., lightning_logs/, .hydra/) and user-specific outputs to avoid cluttering the repository with changes caused by individual users running the code. which helped improve collaboration and version control
+ 
 ### Question 6
 
 > **Did you implement any rules for code quality and format? What about typing and documentation? Additionally,**
