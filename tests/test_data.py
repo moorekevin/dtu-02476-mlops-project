@@ -1,11 +1,11 @@
 import pytest
 import torch
 import pandas as pd
+import logging
 
 
 from pathlib import Path
-from unittest.mock import patch
-from typing import Dict, Any
+from typing import Dict
 
 # Import from your package:
 from final_project.data import MentalDisordersDataset, preprocess
@@ -137,5 +137,6 @@ def test_mental_disorders_dataset_file_not_found(tmp_path):
             training_data_path=str(random_file),
             testing_data_path=str(random_file),
         )
+        logging.info(f"{dataset} created")
     except Exception as e:
         pytest.fail(f"Dataset init unexpectedly raised {e} for missing file.")

@@ -4,7 +4,6 @@ from pathlib import Path
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from transformers import AutoTokenizer
-import typer
 from torch.utils.data import Dataset
 import hydra
 import logging
@@ -153,7 +152,7 @@ def preprocess(raw_data_path: str, training_data_path: str, testing_data_path,  
         "labels": torch.tensor(df_test["labels"].tolist(), dtype=torch.long),
     }
 
-    log.info(f"Saving...")
+    log.info("Saving...")
 
     # Save both dictionaries with torch.save
     torch.save(train_dict, Path(training_data_path).resolve())

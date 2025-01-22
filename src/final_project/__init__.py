@@ -1,3 +1,3 @@
-from .data import MentalDisordersDataset
-from .data_module import MentalDisordersDataModule
-from .model import AwesomeModel
+from .data import MentalDisordersDataset as MentalDisordersDataset
+from .data_module import MentalDisordersDataModule as MentalDisordersDataModule
+from .model import AwesomeModel as AwesomeModel

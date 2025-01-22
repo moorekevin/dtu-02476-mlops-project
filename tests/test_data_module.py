@@ -98,8 +98,12 @@ def test_setup_stages(mock_dataset, mock_cfg, stage):
     """
     # Instead of fully patching, let's do a partial approach:
     # We'll patch only when stage is 'fit' or 'test', since those create a dataset.
-    with patch("final_project.data_module.MentalDisordersDataset", return_value=mock_dataset) as mock_data_class:
-        dm = MentalDisordersDataModule(mock_cfg)
+    # with patch("final_project.data_module.MentalDisordersDataset", return_value=mock_dataset) as mock_data_class:
+    #     dm = mock_data_class(mock_cfg)
+    with patch("final_project.data_module.MentalDisordersDataset") as MockDataset:
+        # MockDataset is the mock class
+        MockDataset.return_value = mock_dataset  # mock_dataset simulates the behavior of an instance
+        dm = MockDataset(mock_cfg)  # Call it as you would the original class
 
         dm.setup(stage)
 
