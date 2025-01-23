@@ -90,7 +90,7 @@ started with Machine Learning Operations (MLOps)
 
 ### Run FASTApi locally with the model
 
-1. Build docker container
+1. Build docker
    `docker build -t api-model -f dockerfiles/api.dockerfile .`
 
 2. Run container
@@ -99,3 +99,28 @@ started with Machine Learning Operations (MLOps)
 3. Open `http://localhost:8000/docs`
 
 4. Profit
+
+### Deploy docker api to Google Cloud Run
+
+1. Build docker (remember to specify x86_64 if youre on Apple silicon)
+   `docker buildx build --platform linux/amd64 -t api-model -f dockerfiles/api.dockerfile .`
+
+2. (optional) set project to the correct in gcloud
+   `gcloud config set project dtumlops-448110`
+
+3. Tag the image
+   `docker tag api-model gcr.io/dtumlops-448110/api-model:latest`
+
+4. Push docker to gcloud
+   `docker push gcr.io/dtumlops-448110/api-model:latest`
+
+5. Run/Deploy gcloud service
+
+```
+gcloud run deploy api-model-service \
+    --image gcr.io/dtumlops-448110/api-model:latest \
+    --platform managed \
+    --region europe-west1 \
+    --allow-unauthenticated \
+    --port 8000
+```
