@@ -1,13 +1,10 @@
 # evaluate.py
 import logging
-import os
-
 import torch
 import pytorch_lightning as pl
 from pytorch_lightning import seed_everything
 from google.cloud import storage
 import hydra
-
 from final_project import MentalDisordersDataModule, AwesomeModel
 
 log = logging.getLogger(__name__)

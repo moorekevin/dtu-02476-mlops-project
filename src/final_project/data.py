@@ -1,7 +1,5 @@
 import torch
-import os
 from pytorch_lightning import seed_everything
-from pathlib import Path
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from transformers import AutoTokenizer
