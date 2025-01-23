@@ -50,5 +50,5 @@ RUN dvc pull
 
 # Add entrypoint to run scripts
 # ENTRYPOINT ["python", "-u", "src/final_project/data.py"]
-ENTRYPOINT ["sh", "-c", "python src/final_project/data.py && python src/final_project/train.py"]
-# ENTRYPOINT ["sh", "-c", " python src/final_project/data.py && python src/final_project/train.py && python src/final_project/evaluate.py"]
+# ENTRYPOINT ["sh", "-c", "python src/final_project/data.py && python src/final_project/train.py"]
+ENTRYPOINT ["sh", "-c", " python src/final_project/data.py && python src/final_project/train.py && python src/final_project/evaluate.py"]
