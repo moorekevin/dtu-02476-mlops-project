@@ -171,8 +171,7 @@ To get an exact copy of our environment, onr would need to follow these steps:
 3.	Create a virtual environment: python -m venv env.
 4.	Activate the virtual environment: On Windows: `env\Scripts\activate` or On macOS/Linux: `source env/bin/activate`
 5.	Install dependencies: `pip install -r requirements.txt`.
-6.	(Optional) Install development dependencies: pip install -r requirements_dev.txt.
-7.	
+6.	Install development dependencies: `pip install -r requirements_dev.txt`
 ### Question 5
 
 > **We expect that you initialized your project using the cookiecutter template. Explain the overall structure of your**
@@ -190,7 +189,7 @@ To get an exact copy of our environment, onr would need to follow these steps:
 We utilized the cookiecutter template but we made some adjustments to better align the structure with our needs:
 - src/: The core of the project is here, containing all modules for data processing, data loading, model definition, training, and evaluation.
 - src/final_project/config/: We moved all configuration files (.yaml) into this directory from the original configs/ folder. This keeps configurations closer to the relevant source code for better organization.
-- dockerfiles/: Maintained for Docker image creation, simplifying containerization for training and deployment.
+- dockerfiles/: Maintained for Docker image creation, simplifying containerization for training and api deployment.
 - tests/: Contains unit tests for key modules to ensure reliability and early bug detection.
 
 Deviations:
@@ -569,7 +568,7 @@ We **did not** implement any monitoring. However, we know monitoring is crucial 
 >
 > Answer:
 
---- question 27 fill here ---
+We used about **$10.62** out of our **$50** credit. Most of this came from **Compute Engine** which cost around **$9.91**. We also spent about **$0.31** on **Cloud Storage**. Overall the cloud experience was positive, we liked how easy it was to set up a virtual machine and have our code running globally quickly, especially with the gcloud CLI. In general the cloud can be super convenient and powerful but you definetely do need to keep track of costs and resource usage to avoid surprises (no surprise loops!).
 
 ### Question 28
 
@@ -585,7 +584,7 @@ We **did not** implement any monitoring. However, we know monitoring is crucial 
 >
 > Answer:
 
---- question 28 fill here ---
+Yes, we implemented a **simple HTML interface** for our FastAPI service. This means that instead of only being able to send JSON data to the `/predict` endpoint, a user can visit a webpage at our service’s root URL. There, they’ll see a small form that asks for a “title” and “selftext.” When the user submits the form, our backend combines these two fields into one text string feeds it to our model, and then shows the **predicted class** and **probabilities** right in the browser. This makes it much more user-friendly and easier to demo for non-technical people.
 
 ### Question 29
 
