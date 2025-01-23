@@ -5,6 +5,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from transformers import AutoTokenizer
 from torch.utils.data import Dataset
+from google.cloud import storage
 import hydra
 import logging
 import random
@@ -155,8 +156,8 @@ def preprocess(raw_data_path: str, training_data_path: str, testing_data_path,  
     log.info("Saving...")
 
     # Save both dictionaries with torch.save
-    torch.save(train_dict, training_data_path)
-    torch.save(test_dict, testing_data_path)
+    torch.save(train_dict, "gs://mlops-bucket-1999/data/processed/training_data.pt")  #training_data_path
+    torch.save(test_dict, "gs://mlops-bucket-1999/data/processed/testing_data.pt") #testing_data_path
 
     log.info(
         f"Saved train and test splits at {training_data_path} and {testing_data_path}")
