@@ -4,7 +4,7 @@ hydra:
 
 seed: 42
 raw_data_path: "gs://mlops-bucket-1999/data/raw/mental_disorders_reddit.csv" #"data/raw/mental_disorders_reddit.csv"
-output_folder: gs://mlops-bucket-1999/data/processed" #"data/processed"
+output_folder: "gs://mlops-bucket-1999/data/processed" #"data/processed"
 training_data_path: "${output_folder}/training_data.pt"
 testing_data_path: "${output_folder}/testing_data.pt"
 tokenizer_name: "distilbert-base-uncased"
