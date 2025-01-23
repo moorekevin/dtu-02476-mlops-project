@@ -86,7 +86,7 @@ Created using [mlops_template](https://github.com/SkafteNicki/mlops_template),
 a [cookiecutter template](https://github.com/cookiecutter/cookiecutter) for getting
 started with Machine Learning Operations (MLOps)
 
-## Documentation
+## Development commands
 
 ### Run FASTApi locally with the model
 
