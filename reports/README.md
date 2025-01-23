@@ -165,7 +165,7 @@ We chose the Hugging Face Transformers library as our third-party framework for 
 
 We used pip to manage dependencies in our project, and both requirements.txt for production dependencies and requirements_dev.txt for development-specific tools. The requirements files contains a complete list of the packages and their specific versions needed to replicate our environment. This file was auto-generated using the command `pip freeze > requirements.txt` after ensuring all required dependencies were installed.
 
-To get an exact copy of our environment, onr would need to follow these steps:
+To get an exact copy of our environment, one would need to follow these steps:
 1.	Clone the project repository: `git clone https://github.com/moorekevin/dtu-02476-mlops-project`
 2.	CD to the project directory
 3.	Create a virtual environment: python -m venv env.
@@ -508,17 +508,13 @@ Yes, we wrote an API for our model using **FastAPI**. We loaded our PyTorch mode
 
 We deployed our API **locally** using Docker and FastAPI. We built a Docker image that includes the model file, dependencies, and our application code. Then we ran the container and exposed port 8000, which let us reach the API at `http://localhost:8000/predict/`. We can invoke the service by sending a `POST` request using something like:
 ```
-curl -X POST -H "Content-Type: application/json"
--d '{"text":"I feel anxious"}'
-http://localhost:8000/predict/
+curl -X POST -H "Content-Type: application/json" -d '{"text":"Anxiety help\nI feel anxious all the time and want to drink more and more coffee. What do you guys think?"}' http://localhost:8000/predict/
 ```
 
 
-We also experimented with deploying to a cloud service. We used a small cloud instance, installed Docker, and ran the same container there. That let us share a URL with teammates for testing. To invoke the service, one can use a `POST` request in curl like this:
+Afterwards we deployed it in the cloud using gcloud and pushing our API docker file running the same container there. To invoke the service a user can use either the URL and UI on `https://api-model-service-403109509659.europe-west1.run.app` or a `POST` request in curl like this:
 ```
-curl -X POST -H "Content-Type: application/json"
--d '{"text":"I feel anxious"}'
-https://api-model-service-403109509659.europe-west1.run.app:8000/predict/
+curl -X POST -H "Content-Type: application/json" -d '{"text":"Anxiety help\nI feel anxious all the time and want to drink more and more coffee. What do you guys think?"}' https://api-model-service-403109509659.europe-west1.run.app/predict/
 ```
 
 ### Question 25
