@@ -640,4 +640,4 @@ Yes, we implemented a **simple HTML interface** for our FastAPI service. This me
 - Students s234061 and s233022 worked together on the unit tests
 - Students s204684 and s204462 worked together on the initial data, model and training code
 - However all members contributed to code equally and helped each other through Zoom meetings.
-- We have used ChatGPT to help debug our code. Additionally, we used GitHub Copilot to help write some of our code.
+- We have used ChatGPT to help debug our code. Additionally, we used GitHub Copilot to help write some of our code. We also used chatgpt for grammar fixes.
