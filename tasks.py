@@ -33,7 +33,7 @@ def dev_requirements(ctx: Context) -> None:
 @task
 def preprocess_data(ctx: Context) -> None:
     """Preprocess data."""
-    ctx.run(f"python src/{PROJECT_NAME}/data.py data/raw data/processed", echo=True, pty=not WINDOWS)
+    ctx.run(f"python src/{PROJECT_NAME}/data.py gs://mlops-bucket-1999/data/raw gs://mlops-bucket-1999/data/processed", echo=True, pty=not WINDOWS)
 
 @task
 def train(ctx: Context) -> None:
