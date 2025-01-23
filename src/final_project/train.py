@@ -18,18 +18,18 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available(
 def train(model, cfg):
     # Try to initialize wandb; if it fails, we set wandb_logger to None
     wandb_logger = None
-    try:
-        log.info("Attempting to initialize WandbLogger...")
-        wandb_logger = WandbLogger(
-            project=cfg.wandb_project_name,
-            entity=cfg.wandb_entity,
-            log_model=True
-        )
-        log.info("Weights & Biases logging is enabled.")
-    except Exception as e:
-        log.warning(f"Could not initialize WandbLogger due to: {e}")
-        log.warning("Proceeding without Weights & Biases logging.")
-        wandb_logger = None
+    # try:
+    #     log.info("Attempting to initialize WandbLogger...")
+    #     wandb_logger = WandbLogger(
+    #         project=cfg.wandb_project_name,
+    #         entity=cfg.wandb_entity,
+    #         log_model=True
+    #     )
+    #     log.info("Weights & Biases logging is enabled.")
+    # except Exception as e:
+    #     log.warning(f"Could not initialize WandbLogger due to: {e}")
+    #     log.warning("Proceeding without Weights & Biases logging.")
+    #     wandb_logger = None
 
     checkpoint_callback = ModelCheckpoint(
         dirpath="models/checkpoints",
