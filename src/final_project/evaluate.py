@@ -25,7 +25,7 @@ def load_from_gcs(gcs_path):
     
     # Use blob.open to stream the data directly
     with blob.open("rb") as f:
-        state_dict = torch.load(f, map_location="cpu")  # Load directly into memory
+        state_dict = torch.load(f, map_location=DEVICE)  # Load directly into memory
     return state_dict
 
 @hydra.main(version_base="1.1", config_path="config", config_name="eval.yaml")
@@ -63,7 +63,7 @@ def main(cfg):
     # log.info(f"Loading model state_dict from {model_path}")
     # state_dict = torch.load(model_path, map_location=DEVICE)
     log.info(f"Loading model state_dict from GCS: {model_path}")
-    state_dict = load_from_gcs(model_path, map_location=DEVICE)
+    state_dict = load_from_gcs(model_path)
     log.info("Downloaded model from GCS")
 
     model.load_state_dict(state_dict)
