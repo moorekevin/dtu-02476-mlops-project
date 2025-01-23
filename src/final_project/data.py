@@ -1,4 +1,5 @@
 import torch
+import os
 from pytorch_lightning import seed_everything
 from pathlib import Path
 import pandas as pd
@@ -63,6 +64,18 @@ class MentalDisordersDataset(Dataset):
             "labels": self.labels[index],
         }
 
+def save_to_gcs(local_path, gcs_path):
+    """Uploads a local file to GCS."""
+    client = storage.Client()
+    
+    # Extract bucket and blob names from the GCS path
+    bucket_name, blob_name = gcs_path.replace("gs://", "").split("/", 1)
+    bucket = client.bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+    
+    # Upload the file to GCS
+    blob.upload_from_filename(local_path)
+    print(f"Uploaded {local_path} to {gcs_path}")
 
 def preprocess(raw_data_path: str, training_data_path: str, testing_data_path,  tokenizer_name: str = "distilbert-base-uncased", max_length: int = 512) -> None:
     log.info("Preprocessing data...")
@@ -156,8 +169,11 @@ def preprocess(raw_data_path: str, training_data_path: str, testing_data_path,  
     log.info("Saving...")
 
     # Save both dictionaries with torch.save
-    torch.save(train_dict, "gs://mlops-bucket-1999/data/processed/training_data.pt")  #training_data_path
-    torch.save(test_dict, "gs://mlops-bucket-1999/data/processed/testing_data.pt") #testing_data_path
+    torch.save(train_dict, "training_data.pt")  #training_data_path
+    save_to_gcs("training_data.pt", "gs://mlops-bucket-1999/data/processed/training_data.pt")
+
+    torch.save(test_dict, "testing_data.pt") #testing_data_path
+    save_to_gcs("testing_data.pt", "gs://mlops-bucket-1999/data/processed/testing_data.pt")
 
     log.info(
         f"Saved train and test splits at {training_data_path} and {testing_data_path}")
