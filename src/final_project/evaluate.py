@@ -1,12 +1,10 @@
 # evaluate.py
 import logging
-import os
-
 import torch
 import pytorch_lightning as pl
 from pytorch_lightning import seed_everything
+from google.cloud import storage
 import hydra
-
 from final_project import MentalDisordersDataModule, AwesomeModel
 
 log = logging.getLogger(__name__)
@@ -14,6 +12,18 @@ log = logging.getLogger(__name__)
 DEVICE = torch.device("cuda" if torch.cuda.is_available()
                       else "mps" if torch.backends.mps.is_available() else "cpu")
 
+
+def load_from_gcs(gcs_path):
+    """Downloads a file from GCS and loads it directly into memory."""
+    client = storage.Client()
+    bucket_name, blob_name = gcs_path.replace("gs://", "").split("/", 1)
+    bucket = client.bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+    
+    # Use blob.open to stream the data directly
+    with blob.open("rb") as f:
+        state_dict = torch.load(f, map_location=DEVICE)  # Load directly into memory
+    return state_dict
 
 @hydra.main(version_base="1.1", config_path="config", config_name="eval.yaml")
 def main(cfg):
@@ -41,13 +51,18 @@ def main(cfg):
 
     # 3) Load model weights saved during training
     model_path = cfg.get("model_path", "models/model.pth")
-    if not os.path.exists(model_path):
-        raise FileNotFoundError(
-            f"Could not find model weights at {model_path}. "
-            f"Please ensure you've trained and saved the model."
-        )
-    log.info(f"Loading model state_dict from {model_path}")
-    state_dict = torch.load(model_path, map_location=DEVICE)
+
+    # if not os.path.exists(model_path):
+    #     raise FileNotFoundError(
+    #         f"Could not find model weights at {model_path}. "
+    #         f"Please ensure you've trained and saved the model."
+    #     )
+    # log.info(f"Loading model state_dict from {model_path}")
+    # state_dict = torch.load(model_path, map_location=DEVICE)
+    log.info(f"Loading model state_dict from GCS: {model_path}")
+    state_dict = load_from_gcs(model_path)
+    log.info("Downloaded model from GCS")
+
     model.load_state_dict(state_dict)
 
     # 4) Setup the PyTorch Lightning Trainer

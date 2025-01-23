@@ -1,10 +1,10 @@
 import torch
 from pytorch_lightning import seed_everything
-from pathlib import Path
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from transformers import AutoTokenizer
 from torch.utils.data import Dataset
+from google.cloud import storage
 import hydra
 import logging
 import random
@@ -24,13 +24,15 @@ class MentalDisordersDataset(Dataset):
         self.seed = seed
         try:
             if train:
-                self.data_path = Path(training_data_path).resolve()
-                log.info(f"Loading training data from {self.data_path}")
+                # self.data_path = training_data_path
+                log.info(f"Loading training data from {training_data_path}")
+                data_dict = self._download_from_gcs(training_data_path)
             else:
-                self.data_path = Path(testing_data_path).resolve()
-                log.info(f"Loading testing data from {self.data_path}")
+                # self.data_path = testing_data_path
+                log.info(f"Loading testing data from {testing_data_path}")
+                data_dict = self._download_from_gcs(testing_data_path)
 
-            data_dict = torch.load(self.data_path, weights_only=False)
+            # data_dict = torch.load(self.data_path, weights_only=False)
             self.input_ids = data_dict["input_ids"]
             self.attention_masks = data_dict["attention_mask"]
             self.labels = data_dict["labels"]
@@ -62,10 +64,34 @@ class MentalDisordersDataset(Dataset):
             "labels": self.labels[index],
         }
 
+    def _download_from_gcs(self, gcs_path):
+        """Downloads a file from GCS and loads it directly into memory."""
+        client = storage.Client()
+        bucket_name, blob_name = gcs_path.replace("gs://", "").split("/", 1)
+        bucket = client.bucket(bucket_name)
+        blob = bucket.blob(blob_name)
+        
+        # Use blob.open to stream the data directly
+        with blob.open("rb") as f:
+            data_dict = torch.load(f, map_location="cpu")  # Load directly into memory
+        return data_dict
+
+def save_to_gcs(local_path, gcs_path):
+    """Uploads a local file to GCS."""
+    client = storage.Client()
+    
+    # Extract bucket and blob names from the GCS path
+    bucket_name, blob_name = gcs_path.replace("gs://", "").split("/", 1)
+    bucket = client.bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+    
+    # Upload the file to GCS
+    blob.upload_from_filename(local_path)
+    print(f"Uploaded {local_path} to {gcs_path}")
 
 def preprocess(raw_data_path: str, training_data_path: str, testing_data_path,  tokenizer_name: str = "distilbert-base-uncased", max_length: int = 512) -> None:
     log.info("Preprocessing data...")
-    raw_data = pd.read_csv(Path(raw_data_path).resolve())
+    raw_data = pd.read_csv(raw_data_path)
     preprocessed_data = raw_data.copy()
     ##################
     # CLEANING LOGIC #
@@ -155,8 +181,11 @@ def preprocess(raw_data_path: str, training_data_path: str, testing_data_path,  
     log.info("Saving...")
 
     # Save both dictionaries with torch.save
-    torch.save(train_dict, Path(training_data_path).resolve())
-    torch.save(test_dict, Path(testing_data_path).resolve())
+    torch.save(train_dict, "training_data.pt")  #training_data_path
+    save_to_gcs("training_data.pt", "gs://mlops-bucket-1999/data/processed/training_data.pt")
+
+    torch.save(test_dict, "testing_data.pt") #testing_data_path
+    save_to_gcs("testing_data.pt", "gs://mlops-bucket-1999/data/processed/testing_data.pt")
 
     log.info(
         f"Saved train and test splits at {training_data_path} and {testing_data_path}")
