@@ -272,7 +272,12 @@ For example, imagine a function that processes user input for a form. Our test m
 >
 > Answer:
 
---- question 9 fill here ---
+At the start of the project, we didn’t use branches or pull requests much because we wanted to work faster and avoid overhead. Now, we primarily use them for running status checks before merging changes into the main branch. This setup works, but it could be improved.
+
+Using branches and pull requests consistently would make collaboration smoother. For example, each team member could have worked on their own branch for specific features or fixes. If someone was adding a new data processing step, they could do that in a separate branch without worrying about breaking the training pipeline in the main branch. Once finished, they could create a pull request, allowing the team to review the code, suggest improvements, and make sure everything works as expected before merging it.
+
+This approach not only prevents accidental errors but also encourages better communication and keeps the main branch stable. It’s especially helpful in bigger teams or long-term projects where tracking changes and maintaining a clean codebase is critical.
+
 
 ### Question 10
 
@@ -287,11 +292,7 @@ For example, imagine a function that processes user input for a form. Our test m
 >
 > Answer:
 
-At the start of the project, we didn’t use branches or pull requests much because we wanted to work faster and avoid overhead. Now, we primarily use them for running status checks before merging changes into the main branch. This setup works, but it could be improved.
-
-Using branches and pull requests consistently would make collaboration smoother. For example, each team member could have worked on their own branch for specific features or fixes. If someone was adding a new data processing step, they could do that in a separate branch without worrying about breaking the training pipeline in the main branch. Once finished, they could create a pull request, allowing the team to review the code, suggest improvements, and make sure everything works as expected before merging it.
-
-This approach not only prevents accidental errors but also encourages better communication and keeps the main branch stable. It’s especially helpful in bigger teams or long-term projects where tracking changes and maintaining a clean codebase is critical.
+--- Question 10 ---
 
 ### Question 11
 
