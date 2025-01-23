@@ -1,0 +1,39 @@
+outs:
+- hash: md5
+  path: data
+  files:
+  - relpath: .DS_Store
+    md5: 76a768ff4bda1ed0dbdd26eb769d9a9e
+    size: 6148
+    cloud:
+      myremote:
+        etag: 08b1b7b392b48a8b031001
+        version_id: '1737585966504881'
+  - relpath: processed/.gitkeep
+    md5: d41d8cd98f00b204e9800998ecf8427e
+    size: 0
+    cloud:
+      myremote:
+        etag: 08cfa6cc92b48a8b031001
+        version_id: '1737585966912335'
+  - relpath: raw/.DS_Store
+    md5: 194577a7e20bdcc7afbb718f502c134c
+    size: 6148
+    cloud:
+      myremote:
+        etag: 08b0f5cb92b48a8b031001
+        version_id: '1737585966906032'
+  - relpath: raw/.gitkeep
+    md5: d41d8cd98f00b204e9800998ecf8427e
+    size: 0
+    cloud:
+      myremote:
+        etag: 08b8facb92b48a8b031001
+        version_id: '1737585966906680'
+  - relpath: raw/mental_disorders_reddit.csv
+    md5: 451fb42e0694ff1869d78322854959bc
+    size: 112201404
+    cloud:
+      myremote:
+        etag: 089cf6a795b48a8b031001
+        version_id: '1737585972607772'
