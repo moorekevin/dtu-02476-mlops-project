@@ -66,7 +66,7 @@ class MentalDisordersDataset(Dataset):
             "labels": self.labels[index],
         }
 
-    def _download_from_gcs(gcs_path):
+    def _download_from_gcs(self, gcs_path):
         """Downloads a file from GCS and loads it directly into memory."""
         client = storage.Client()
         bucket_name, blob_name = gcs_path.replace("gs://", "").split("/", 1)
