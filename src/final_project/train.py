@@ -4,6 +4,7 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 import torch
 from final_project import MentalDisordersDataModule
 from final_project import AwesomeModel
+from google.cloud import storage
 import hydra
 import logging
 import os
@@ -50,9 +51,28 @@ def train(model, cfg):
     # Fit
     trainer.fit(model, dm)
     log.info("Training complete")
+
+    # Save the model locally
     os.makedirs("models", exist_ok=True)
     torch.save(model.state_dict(), "models/model.pth")
 
+    # Save the model to GCS
+    gcs_model_path = cfg.model_path
+    save_to_gcs("models/model.pth", gcs_model_path)
+    log.info(f"Model saved to GCS at {gcs_model_path}")
+
+def save_to_gcs(local_path, gcs_path):
+    """Uploads a local file to GCS."""
+    client = storage.Client()
+    
+    # Extract bucket and blob names from the GCS path
+    bucket_name, blob_name = gcs_path.replace("gs://", "").split("/", 1)
+    bucket = client.bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+    
+    # Upload the file to GCS
+    blob.upload_from_filename(local_path)
+    print(f"Uploaded {local_path} to {gcs_path}")
 
 @hydra.main(version_base="1.1", config_path="config", config_name="train.yaml")
 def main(cfg):
