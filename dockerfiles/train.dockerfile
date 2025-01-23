@@ -32,7 +32,6 @@ WORKDIR /app
 
 # Copy project files
 COPY src src/
-COPY data data/
 COPY requirements.txt requirements.txt
 COPY requirements_dev.txt requirements_dev.txt
 COPY README.md README.md
