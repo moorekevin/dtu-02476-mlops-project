@@ -1,5 +1,5 @@
 import pytorch_lightning as pl
-from pytorch_lightning.loggers import WandbLogger, TensorBoardLogger
+from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.callbacks import ModelCheckpoint
 import torch
 from final_project import MentalDisordersDataModule
@@ -8,6 +8,7 @@ from google.cloud import storage
 import hydra
 import logging
 import os
+
 log = logging.getLogger(__name__)
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available(
@@ -15,19 +16,20 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available(
 
 
 def train(model, cfg):
-    # Option A: Check if WANDB_API_KEY is set in the environment
-    use_wandb = os.getenv("WANDB_API_KEY") is not None
-
-    if use_wandb:
+    # Try to initialize wandb; if it fails, we set wandb_logger to None
+    wandb_logger = None
+    try:
+        log.info("Attempting to initialize WandbLogger...")
         wandb_logger = WandbLogger(
             project=cfg.wandb_project_name,
             entity=cfg.wandb_entity,
             log_model=True
         )
-        logger_to_use = wandb_logger
-    else:
-        print("WANDB_API_KEY not found, falling back to TensorBoardLogger.")
-        logger_to_use = TensorBoardLogger(save_dir="lightning_logs")
+        log.info("Weights & Biases logging is enabled.")
+    except Exception as e:
+        log.warning(f"Could not initialize WandbLogger due to: {e}")
+        log.warning("Proceeding without Weights & Biases logging.")
+        wandb_logger = None
 
     checkpoint_callback = ModelCheckpoint(
         dirpath="models/checkpoints",
@@ -52,7 +54,7 @@ def train(model, cfg):
         max_epochs=cfg.epochs,
         accelerator="auto",
         devices="auto",
-        logger=logger_to_use,
+        logger=wandb_logger,
         callbacks=[checkpoint_callback],
         log_every_n_steps=1,
     )
@@ -64,7 +66,7 @@ def train(model, cfg):
     # Save the model locally
     os.makedirs("models", exist_ok=True)
     torch.save(model.state_dict(), "models/model.pth")
-
+    
     # Save the model to GCS
     gcs_model_path = cfg.model_path
     save_to_gcs("models/model.pth", gcs_model_path)
