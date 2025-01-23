@@ -1,5 +1,5 @@
 import pytorch_lightning as pl
-from pytorch_lightning.loggers import WandbLogger
+from pytorch_lightning.loggers import WandbLogger, TensorBoardLogger
 from pytorch_lightning.callbacks import ModelCheckpoint
 import torch
 from final_project import MentalDisordersDataModule
@@ -15,11 +15,20 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available(
 
 
 def train(model, cfg):
-    wandb_logger = WandbLogger(
-        project=cfg.wandb_project_name,
-        entity=cfg.wandb_entity,
-        log_model=True
-    )
+    # Option A: Check if WANDB_API_KEY is set in the environment
+    use_wandb = os.getenv("WANDB_API_KEY") is not None
+
+    if use_wandb:
+        wandb_logger = WandbLogger(
+            project=cfg.wandb_project_name,
+            entity=cfg.wandb_entity,
+            log_model=True
+        )
+        logger_to_use = wandb_logger
+    else:
+        print("WANDB_API_KEY not found, falling back to TensorBoardLogger.")
+        logger_to_use = TensorBoardLogger(save_dir="lightning_logs")
+
     checkpoint_callback = ModelCheckpoint(
         dirpath="models/checkpoints",
         filename="{epoch}-{val_loss:.2f}",
@@ -43,7 +52,7 @@ def train(model, cfg):
         max_epochs=cfg.epochs,
         accelerator="auto",
         devices="auto",
-        logger=wandb_logger,
+        logger=logger_to_use,
         callbacks=[checkpoint_callback],
         log_every_n_steps=1,
     )
