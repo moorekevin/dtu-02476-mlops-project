@@ -6,13 +6,8 @@ from pydantic import BaseModel
 from transformers import AutoTokenizer
 from omegaconf import OmegaConf
 
-# Import your model definition
-# Make sure AwesomeModel, and possibly DEVICE, are accessible or defined in this scope
-# If needed, copy the definitions from your training code or import them.
-# adjust import path as necessary
 from src.final_project.model import AwesomeModel
 
-# For simplicity, define or import the same device logic you used in your model
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
@@ -63,7 +58,7 @@ app = FastAPI(lifespan=lifespan)
 @app.post("/predict/")
 async def predict_text(data: TextItem):
     """
-    Accept a JSON body containing text, run inference, and return the predicted class.
+    Accept a JSON body containing text, runs inference and return predicted class.
     """
     text = data.text
 
