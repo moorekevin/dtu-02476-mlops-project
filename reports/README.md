@@ -107,7 +107,7 @@ will check the repositories and the code to verify your answers.
 * [ ] Write some documentation for your application (M32)
 * [ ] Publish the documentation to GitHub Pages (M32)
 * [x] Revisit your initial project description. Did the project turn out as you wanted?
-* [x] Create an architectural diagram over your MLOps pipeline
+* [ ] Create an architectural diagram over your MLOps pipeline
 * [x] Make sure all group members have an understanding about all parts of the project
 * [x] Uploaded all your code to GitHub
 
@@ -349,9 +349,9 @@ Hydra automatically loads the settings and w&b logs everything from metrics to h
 We again relied on a combination of Hydra and W&B. Hydra organizes all configurations in YAML files, ensuring every experiment’s settings are saved and easy to reuse. W&B logs all the important details—metrics, hyperparameters, and even the outputs like model files or loss curves—so we can always go back and review what worked (or often didn’t).
 
 We also used a fixed random seed (seed: 42) throughout the project to ensure consistency across runs. If someone wants to reproduce an experiment, they can simply:
-	1.	Grab the right configuration file (e.g., train.yaml).
-	2.	Check W&B for the exact metrics and settings.
-	3.	Run the experiment again
+1. Grab the right configuration file (e.g., train.yaml).
+2. Check W&B for the exact metrics and settings.
+3. Run the experiment again
 
 
 ### Question 14
