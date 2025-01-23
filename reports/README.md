@@ -490,7 +490,7 @@ We also used a fixed random seed (seed: 42) throughout the project to ensure con
 >
 > Answer:
 
---- question 23 fill here ---
+Yes, we wrote an API for our model using **FastAPI**. We loaded our PyTorch model during app startup, placed it on the correct device, and then created an endpoint (`/predict/`) that accepts a JSON body containing text. The endpoint tokenizes the text, runs a forward pass through the model, and returns a JSON response with the predicted class and probabilities. We also made a small HTML form so that we could test the model in a browser without having to send raw JSON requests. This helped us demonstrate how the model responds to real user input. Overall, we kept the code straightforward and documented the steps so that anyone on our team can understand and maintain it.
 
 ### Question 24
 
@@ -506,7 +506,20 @@ We also used a fixed random seed (seed: 42) throughout the project to ensure con
 >
 > Answer:
 
---- question 24 fill here ---
+We deployed our API **locally** using Docker and FastAPI. We built a Docker image that includes the model file, dependencies, and our application code. Then we ran the container and exposed port 8000, which let us reach the API at `http://localhost:8000/predict/`. We can invoke the service by sending a `POST` request using something like:
+```
+curl -X POST -H "Content-Type: application/json"
+-d '{"text":"I feel anxious"}'
+http://localhost:8000/predict/
+```
+
+
+We also experimented with deploying to a cloud service. We used a small cloud instance, installed Docker, and ran the same container there. That let us share a URL with teammates for testing. To invoke the service, one can use a `POST` request in curl like this:
+```
+curl -X POST -H "Content-Type: application/json"
+-d '{"text":"I feel anxious"}'
+https://api-model-service-403109509659.europe-west1.run.app:8000/predict/
+```
 
 ### Question 25
 
@@ -521,7 +534,7 @@ We also used a fixed random seed (seed: 42) throughout the project to ensure con
 >
 > Answer:
 
---- question 25 fill here ---
+We **did not perform** dedicated unit tests or load tests on our API. While we tested the API manually and verified that it could return valid predictions for several sample texts, we did not automate these checks with a framework like **pytest** or **Locust**. If we had more time we would add basic tests to ensure each endpoint returns the correct status codes and data formats. For load testing, we could simulate multiple users sending requests at once to see how many requests per second the API can handle. This would help us plan whether we need to optimize our model or scale up infrastructure. but Right now we only have informal tests and no official performance metrics.
 
 ### Question 26
 
@@ -536,7 +549,7 @@ We also used a fixed random seed (seed: 42) throughout the project to ensure con
 >
 > Answer:
 
---- question 26 fill here ---
+We **did not** implement any monitoring. However, we know monitoring is crucial for a live ML service. Over time, data can drift away from what the model was trained on, causing performance to drop. Monitoring solutions like Prometheus/Grafana (for system metrics) or tools like Evidently (for data drift detection) would let us track things like request latency, model confidence, and changes in input distributions. If any of these metrics start acting unusual, we’d know the model might need retraining or our system needs scaling. Without monitoring it would risk finding out about issues only when users complain. Monitoring would give us an early warning system to maintain long-term reliability and keep the model accurate.
 
 ## Overall discussion of project
 
