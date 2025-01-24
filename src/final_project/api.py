@@ -28,7 +28,7 @@ async def lifespan(app: FastAPI):
 
     print("Loading model")
 
-    config_path = ".hydra/config.yaml"
+    config_path = "config/model.yaml"
     cfg = OmegaConf.load(config_path)
 
     # ---------------------------------------------------------
