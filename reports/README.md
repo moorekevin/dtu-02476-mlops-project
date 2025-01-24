@@ -123,10 +123,6 @@ MLOPS 46
 ### Question 2
 > **Enter the study number for each member in the group**
 >
-> Example:
->
-> *sXXXXXX, sXXXXXX, sXXXXXX*
->
 > Answer:
 
  s204462, s234061, s233022, s204684
@@ -172,6 +168,7 @@ To get an exact copy of our environment, one would need to follow these steps:
 4.	Activate the virtual environment: On Windows: `env\Scripts\activate` or On macOS/Linux: `source env/bin/activate`
 5.	Install dependencies: `pip install -r requirements.txt`.
 6.	Install development dependencies: `pip install -r requirements_dev.txt`
+
 ### Question 5
 
 > **We expect that you initialized your project using the cookiecutter template. Explain the overall structure of your**
@@ -402,7 +399,21 @@ With more compute and time, we would scale to the full training dataset to push 
 >
 > Answer:
 
---- question 15 fill here ---
+We created two Docker images, one for training and evaluation, and one for API deployment. Each image includes all necessary dependencies and configurations. For both we utilized the cookiecutter template's images as our base and modified it to implement the required functionality.
+
+`tain.dockerfile` installs system-level dependencies (gcc, git), Python libraries (via requirements.txt), and sets up the environment with DVC to pull data. This Docker image was executed with the following command:
+
+```
+docker build -t project-trainer:latest -f Dockerfile .
+docker run project-trainer:latest
+```
+`api.dockerfile` installs application dependencies and starts the API server with Uvicorn. The API Docker image can be run as follows:
+
+```
+docker build -t project-api:latest -f api.dockerfile .
+docker run -p 8000:8000 project-api:latest
+```
+You can find our train.dockerfile here <https://github.com/moorekevin/dtu-02476-mlops-project/blob/main/dockerfiles/train.dockerfile>
 
 ### Question 16
 
@@ -417,7 +428,10 @@ With more compute and time, we would scale to the full training dataset to push 
 >
 > Answer:
 
---- question 16 fill here ---
+We worked in two sub-teams one of which focused on model development, while the other took on Dockerfiles and cloud deployment. For debugging, the model team primarily relied on the VSCode debugger for step by step inspection of the code, alongside the traditional print statements and logging. The Docker and cloud team primarily utilized Docker logs to identify issues related to dependency mismatches or incorrect configurations. 
+
+While we didn’t run any specific profiling, we addressed performance concerns iteratively by observing runtime behavior during experiments and optimizing as needed. This practical debugging approach ensured smooth development and deployment throughout the project.
+
 
 ## Working in the cloud
 
@@ -448,8 +462,12 @@ With more compute and time, we would scale to the full training dataset to push 
 > *using a custom container: ...*
 >
 > Answer:
+We made use on GCP mostly to train our model but also to deploy our API. 
 
---- question 18 fill here ---
+Regarding the training, after some experimentation we used an n1-standard (high cpu) instance with balanced configurations for CPU and memory, which provided sufficient resources for our workloads without unnecessary overhead. In highnsight, we could have used an instance with less RAM but since we weren't in danger of overspending our credits we did not spend too much time on that. High CPU was however crucial for our experiment. 
+
+
+The VMs ran a lightweight Debian-based operating system.
 
 ### Question 19
 
