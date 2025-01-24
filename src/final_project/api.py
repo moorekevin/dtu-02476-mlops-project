@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from transformers import AutoTokenizer
 from omegaconf import OmegaConf
 
-from src.final_project.model import AwesomeModel
+from final_project import AwesomeModel
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available(
 ) else "mps" if torch.backends.mps.is_available() else "cpu")
@@ -35,7 +35,15 @@ async def lifespan(app: FastAPI):
     # Instantiate AwesomeModel and load its weights
     # ---------------------------------------------------------
     model = AwesomeModel(cfg)
-    model.load_state_dict(torch.load("models/model.pth", map_location=DEVICE))
+    client = storage.Client()
+    bucket_name, blob_name = "gs://mlops-bucket-1999/models/model.pth".replace("gs://", "").split("/", 1)
+    bucket = client.bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+    
+    with blob.open("rb") as f:
+        state_dict = torch.load(f, map_location=DEVICE)
+
+    model.load_state_dict(state_dict)
     model.to(DEVICE)
     model.eval()
 
