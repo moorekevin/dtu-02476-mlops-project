@@ -7,6 +7,7 @@ from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from transformers import AutoTokenizer
 from omegaconf import OmegaConf
+from google.cloud import storage
 
 from final_project import AwesomeModel
 
@@ -28,7 +29,7 @@ async def lifespan(app: FastAPI):
 
     print("Loading model")
 
-    config_path = "config/model.yaml"
+    config_path = "src/final_project/config/model.yaml"
     cfg = OmegaConf.load(config_path)
 
     # ---------------------------------------------------------
