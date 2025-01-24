@@ -5,7 +5,6 @@ RUN apt update && \
     apt install --no-install-recommends -y build-essential gcc && \
     apt clean && rm -rf /var/lib/apt/lists/*
 
-COPY .hydra .hydra/
 COPY models models/
 COPY src src/
 COPY requirements.txt requirements.txt
