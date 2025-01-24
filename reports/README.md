@@ -83,7 +83,7 @@ will check the repositories and the code to verify your answers.
 * [ ] Add a continues workflow that triggers when changes to the model registry is made (M19)
 * [x] Create a data storage in GCP Bucket for your data and link this with your data version control setup (M21)
 * [x] Create a trigger workflow for automatically building your docker images (M21)
-* [ ] Get your model training in GCP using either the Engine or Vertex AI (M21)
+* [x] Get your model training in GCP using either the Engine or Vertex AI (M21)
 * [x] Create a FastAPI application that can do inference using your model (M22)
 * [x] Deploy your model in GCP using either Functions or Run as the backend (M23)
 * [ ] Write API tests for your application and setup continues integration for these (M24)
@@ -233,7 +233,7 @@ These concepts matter in larger projects because they prevent chaos as the codeb
 >
 > Answer:
 
-In total, we implemented 5 tests focusing on the core functionality (aka critical parts) of our project:
+In total, we implemented 23 tests in 5 files focusing on the core functionality (aka critical parts) of our project:
 1. test_data_module: Ensures the data module initializes correctly and handles data loading and splitting.
 2. test_data: Validates data preprocessing, including creating tensors and handling edge cases like missing or corrupted data.
 3. test_evaluate: Checks that the evaluation process correctly computes metrics and handles predictions.
@@ -291,7 +291,9 @@ This approach not only prevents accidental errors but also encourages better com
 >
 > Answer:
 
---- Question 10 ---
+We made use of DVC in our project to manage data efficiently. We stored our dataset on a cloud storage bucket configured as a remote in DVC. Enabling version-aware functionality, we could keep track of changes to our dataset and link specific data versions to the corresponding code or model version.
+
+Using DVC really helped us maintain a robust and reproducible machine learning pipeline by ensuring that every team member worked with the same dataset version, avoiding inconsistencies. Additionally, it streamlined collaboration by allowing us to manage large datasets without adding them directly to version control systems like Git (which wouldn't be possible due to the dataset size), reducing storage overhead and improving performance. However, we encountered some challenges with the pointers due to not setting it up correctly the first time. Our inexperience with DVC resulted in a lot of time spent debugging.
 
 ### Question 11
 
@@ -308,7 +310,15 @@ This approach not only prevents accidental errors but also encourages better com
 >
 > Answer:
 
---- question 11 fill here ---
+We implemented GitHub workflows mainly for running unit tests whenever we push to a branch and for linting the code. These were organized in two separate files: `tests.yaml` and `codecheck.yaml`.
+
+In `tests.yaml`, we install all dependencies on 3 different operating systems (Linux, Windows, macOS) with Python version 3.11. After that, we run all the unit tests using the command `coverage run -m pytest tests/`. This ensures all 23 unit tests pass and calculates the code coverage, which is then displayed in the logs for visibility. Running the tests on multiple operating systems guarantees compatibility across different environments, which is important for ensuring consistent behavior. This workflow can be seen here: [tests.yaml](https://github.com/moorekevin/dtu-02476-mlops-project/blob/main/.github/workflows/tests.yaml)
+
+In `codecheck.yaml`, we use `ruff` to format our code every time we push, ensuring that new changes are consistently formatted across all files. This saves us from dealing with formatting issues in pull requests, reduces noise during reviews, and keeps the codebase clean.
+
+We also considered adding workflows for building Docker images or running integration tests but decided to manage those tasks through external triggers instead, as it aligned better with our project setup and reduced the complexity of the workflows.
+
+Overall, using these workflows has improved our development process by automating essential checks, saving time, and reducing manual errors. It has also increased confidence in our codebase's reliability and ensured better collaboration among team members.
 
 ## Running code and tracking experiments
 
@@ -369,7 +379,15 @@ We also used a fixed random seed (seed: 42) throughout the project to ensure con
 >
 > Answer:
 
---- question 14 fill here ---
+![wandb](figures/wandb.png)
+
+As seen in the figure, we ran three of our experiments using Weights & Biases to track training progress. These tests were run locally, so we limited the number of training epochs and reduced the percentage of our preprocessed dataset used for training. Our main focus was finding the optimal learning rate and the number of training steps.
+
+Initially, we set the learning rate too high, which caused the model to overshoot and fail to converge. These runs, represented by the hidden tests in the screenshot, generated noisy data. Once we found a suitable learning rate, we conducted the "honest-water-3" experiment with a small dataset to confirm that the model could still learn, even with the risk of overfitting. The results showed rapid decreases in training loss and significant increases in accuracy.
+
+Following that, we increased the amount of data used. While training accuracy improved more gradually, the validation accuracy reached higher values, showing that the model was generalizing better without overfitting initially. However, at later stages, the validation accuracy began to drop, indicating some overfitting as training progressed.
+
+With more compute and time, we would scale to the full training dataset to push validation accuracy further, as this current setup is likely constrained by the limited data.
 
 ### Question 15
 
