@@ -462,12 +462,12 @@ While we didn’t run any specific profiling, we addressed performance concerns 
 > *using a custom container: ...*
 >
 > Answer:
-We made use on GCP mostly to train our model but also to deploy our API. 
 
-Regarding the training, after some experimentation we used an n1-standard (high cpu) instance with balanced configurations for CPU and memory, which provided sufficient resources for our workloads without unnecessary overhead. In highnsight, we could have used an instance with less RAM but since we weren't in danger of overspending our credits we did not spend too much time on that. High CPU was however crucial for our experiment. 
+We used GCP to train our model (primarily) and deploy our API.
 
+For training, after some experimentation, we settled on an n1-standard high-CPU instance with balanced CPU and memory configurations. This setup provided sufficient computational resources without unnecessary overhead. In hindsight, we could have optimized further by selecting an instance with less RAM, but since we weren’t at risk of exceeding our allocated credits, we prioritized ease of use over fine-tuning the instance type. However, the high-CPU configuration was essential for our experiments.
 
-The VMs ran a lightweight Debian-based operating system.
+The virtual machines were configured to run a lightweight Debian-based operating system, ensuring efficiency and quick startup times.
 
 ### Question 19
 
@@ -509,7 +509,9 @@ The VMs ran a lightweight Debian-based operating system.
 >
 > Answer:
 
---- question 22 fill here ---
+We utilized GCP's Compute Engine to train our model in the cloud, leveraging its flexibility and scalability. After dockerizing the project and building the image on the cloud using Cloud Build triggers, we ran the image directly from the GCP terminal (manually). Compute Engine provided the control we needed for running customized environments while ensuring reliable performance.
+
+To handle data storage, we mounted an S3 bucket cloud storage to the instance. This setup allowed us to efficiently preprocess data and, upon the completion of training, save the resulting model files directly to the corresponding bucket directory for seamless access and management.
 
 ## Deployment
 
