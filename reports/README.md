@@ -476,7 +476,7 @@ The VMs ran a lightweight Debian-based operating system.
 >
 > Answer:
 
---- question 19 fill here ---
+![bucket](figures/bucket.png)
 
 ### Question 20
 
@@ -485,7 +485,7 @@ The VMs ran a lightweight Debian-based operating system.
 >
 > Answer:
 
---- question 20 fill here ---
+![registry](figures/registry.png)
 
 ### Question 21
 
@@ -494,7 +494,7 @@ The VMs ran a lightweight Debian-based operating system.
 >
 > Answer:
 
---- question 21 fill here ---
+![build](figures/build.png)
 
 ### Question 22
 
@@ -633,7 +633,7 @@ Yes, we implemented a **simple HTML interface** for our FastAPI service. This me
 >
 > Answer:
 
---- question 29 fill here ---
+![overview](figures/overview.png)
 
 ### Question 30
 
