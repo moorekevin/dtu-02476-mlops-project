@@ -448,7 +448,19 @@ While we didn’t run any specific profiling, we addressed performance concerns 
 >
 > Answer:
 
---- question 17 fill here ---
+We used the following GCP services in our project:
+
+- **Compute Engine API**: For training our model on virtual machines.
+- **Cloud Build API**: Automated Docker image builds after GitHub updates.
+- **Artifact Registry API**: Stored Docker images for easy retrieval and deployment.
+- **Cloud Storage API**: Managed datasets and model artifacts with DVC for version control.
+- **Cloud Run API**: Deployed our FastAPI-based model for inference via a public endpoint.
+- **Cloud Functions API**: Triggered lightweight tasks and automated workflows.
+- **IAM Service API**: Managed permissions for secure access to Compute Engine and other resources.
+- **Cloud Logging API**: Monitored logs for debugging and performance optimization.
+
+These services streamlined training, deployment, and resource management while ensuring security and scalability.
+
 
 ### Question 18
 
@@ -602,7 +614,9 @@ We **did not** implement any monitoring. However, we know monitoring is crucial 
 >
 > Answer:
 
-We used about **$10.62** out of our **$50** credit. Most of this came from **Compute Engine** which cost around **$9.91**. We also spent about **$0.31** on **Cloud Storage**. Overall the cloud experience was positive, we liked how easy it was to set up a virtual machine and have our code running globally quickly, especially with the gcloud CLI. In general the cloud can be super convenient and powerful but you definetely do need to keep track of costs and resource usage to avoid surprises (no surprise loops!).
+We used about **$10.62** out of our **$50** credit. Most of this came from **Compute Engine** which cost around **$9.91**. Then for one more night we forgot to stop the engine and the toatl came up to **$19.59** out of **$50**, showing the importance of managing your computational resources correctly. We also spent about **$0.31** on **Cloud Storage**. 
+
+Overall working in the cloud is an efficient solution to run your code quickly, economically, and universaly. That being said, it has a steap learning curve and running the simplest commands can take time when you are getting familiarized with the tools.
 
 ### Question 28
 
@@ -637,6 +651,19 @@ Yes, we implemented a **simple HTML interface** for our FastAPI service. This me
 
 ![overview](figures/overview.png)
 
+The figure above shows the overall architecture of our system and the services we use. The process starts locally, where we experiment with different parameters using Weights & Biases (W&B) and Hydra for configuration management. Once optimal parameters are identified, we create a new branch, commit the changes, and push them to GitHub.
+
+From GitHub, the Continuous Integration pipeline kicks in. We use GitHub Actions to run various checks, including code formatting, linting, and unit tests. If all actions pass, the branch can be merged into the main branch. This ensures that the codebase remains clean and functional.
+
+Merging into the main branch triggers a build process in Google Cloud Platform (GCP). The Docker image is built using `train.dockerfile` for training or `api.dockerfile` for deployment, depending on the use case. The resulting Docker image is stored in GCP Artifact Registry as the latest version.
+
+For model training, the image is deployed to Google Compute Engine, where the model is trained with the new configurations. Once training is complete, the updated model is deployed via a FastAPI application. This API serves predictions and is hosted on a scalable platform (e.g., Google App Engine).
+
+End users can interact with the system by querying the FastAPI endpoint or using our simple UI. The Dockerized API ensures consistency and easy scaling. If users need the source code, they can clone it directly from GitHub. For deploying the latest updates, they can pull the newest Docker image.
+
+This architecture ensures smooth collaboration, reproducibility, and scalable deployment for both model training and serving.
+
+
 ### Question 30
 
 > **Discuss the overall struggles of the project. Where did you spend most time and what did you do to overcome these**
@@ -649,7 +676,17 @@ Yes, we implemented a **simple HTML interface** for our FastAPI service. This me
 >
 > Answer:
 
---- question 30 fill here ---
+The biggest challenges in our project revolved around **learning and integrating new tools** while managing time constraints. For many of us, this was our first time using tools like Hydra, DVC, and deploying models via Docker in the cloud, which led to a steep learning curve. 
+
+Setting up **DVC** for data versioning was one of the most time-consuming tasks. Initially, we ran into problems with correctly setting up pointers to the remote bucket, which caused errors when trying to retrieve data. We solved this by carefully reading the documentation and testing different configurations until we got it working. 
+
+Another challenge was with **Docker and cloud deployment**. While creating Docker images was relatively straightforward, deploying and running them on GCP introduced unexpected complexities, such as handling environment variables, and paths. We spent significant time debugging these issues using logs and testing smaller changes iteratively. We eventually streamlined the process by automating builds and using triggers for training the model.
+
+Additionally, **training in the cloud** presented challenges. Limited computational resources (no access to GPUs and even CPUs at some high-demand times) made it difficult to run long training sessions or larger models. To address this, we tested configurations locally before deploying to GCP, ensuring efficient use of resources, but we still only trained on a percentage of our dataset because we were pressed on time.
+
+On a positive note, CI did not cause significant issues as we implemented tests and lining quite early in the process, making sure to protect our main branch. Of course, this does not mean that collaboration was always easy as we needed to ensure that everyone's code worked seamlessly together and that one piece wasn't breaking another. 
+
+Overall, we overcame these challenges by splitting tasks based on team strengths, scheduling regular Zoom calls, and keeping detailed documentation for every tool we implemented.
 
 ### Question 31
 
