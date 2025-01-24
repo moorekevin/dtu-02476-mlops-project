@@ -83,7 +83,7 @@ will check the repositories and the code to verify your answers.
 * [ ] Add a continues workflow that triggers when changes to the model registry is made (M19)
 * [x] Create a data storage in GCP Bucket for your data and link this with your data version control setup (M21)
 * [x] Create a trigger workflow for automatically building your docker images (M21)
-* [ ] Get your model training in GCP using either the Engine or Vertex AI (M21)
+* [x] Get your model training in GCP using either the Engine or Vertex AI (M21)
 * [x] Create a FastAPI application that can do inference using your model (M22)
 * [x] Deploy your model in GCP using either Functions or Run as the backend (M23)
 * [ ] Write API tests for your application and setup continues integration for these (M24)
@@ -122,10 +122,6 @@ MLOPS 46
 
 ### Question 2
 > **Enter the study number for each member in the group**
->
-> Example:
->
-> *sXXXXXX, sXXXXXX, sXXXXXX*
 >
 > Answer:
 
@@ -172,6 +168,7 @@ To get an exact copy of our environment, one would need to follow these steps:
 4.	Activate the virtual environment: On Windows: `env\Scripts\activate` or On macOS/Linux: `source env/bin/activate`
 5.	Install dependencies: `pip install -r requirements.txt`.
 6.	Install development dependencies: `pip install -r requirements_dev.txt`
+
 ### Question 5
 
 > **We expect that you initialized your project using the cookiecutter template. Explain the overall structure of your**
@@ -233,7 +230,7 @@ These concepts matter in larger projects because they prevent chaos as the codeb
 >
 > Answer:
 
-In total, we implemented 5 tests focusing on the core functionality (aka critical parts) of our project:
+In total, we implemented 23 tests in 5 files focusing on the core functionality (aka critical parts) of our project:
 1. test_data_module: Ensures the data module initializes correctly and handles data loading and splitting.
 2. test_data: Validates data preprocessing, including creating tensors and handling edge cases like missing or corrupted data.
 3. test_evaluate: Checks that the evaluation process correctly computes metrics and handles predictions.
@@ -291,7 +288,9 @@ This approach not only prevents accidental errors but also encourages better com
 >
 > Answer:
 
---- Question 10 ---
+We made use of DVC in our project to manage data efficiently. We stored our dataset on a cloud storage bucket configured as a remote in DVC. Enabling version-aware functionality, we could keep track of changes to our dataset and link specific data versions to the corresponding code or model version.
+
+Using DVC really helped us maintain a robust and reproducible machine learning pipeline by ensuring that every team member worked with the same dataset version, avoiding inconsistencies. Additionally, it streamlined collaboration by allowing us to manage large datasets without adding them directly to version control systems like Git (which wouldn't be possible due to the dataset size), reducing storage overhead and improving performance. However, we encountered some challenges with the pointers due to not setting it up correctly the first time. Our inexperience with DVC resulted in a lot of time spent debugging.
 
 ### Question 11
 
@@ -308,7 +307,15 @@ This approach not only prevents accidental errors but also encourages better com
 >
 > Answer:
 
---- question 11 fill here ---
+We implemented GitHub workflows mainly for running unit tests whenever we push to a branch and for linting the code. These were organized in two separate files: `tests.yaml` and `codecheck.yaml`.
+
+In `tests.yaml`, we install all dependencies on 3 different operating systems (Linux, Windows, macOS) with Python version 3.11. After that, we run all the unit tests using the command `coverage run -m pytest tests/`. This ensures all 23 unit tests pass and calculates the code coverage, which is then displayed in the logs for visibility. Running the tests on multiple operating systems guarantees compatibility across different environments, which is important for ensuring consistent behavior. This workflow can be seen here: [tests.yaml](https://github.com/moorekevin/dtu-02476-mlops-project/blob/main/.github/workflows/tests.yaml)
+
+In `codecheck.yaml`, we use `ruff` to format our code every time we push, ensuring that new changes are consistently formatted across all files. This saves us from dealing with formatting issues in pull requests, reduces noise during reviews, and keeps the codebase clean.
+
+We also considered adding workflows for building Docker images or running integration tests but decided to manage those tasks through external triggers instead, as it aligned better with our project setup and reduced the complexity of the workflows.
+
+Overall, using these workflows has improved our development process by automating essential checks, saving time, and reducing manual errors. It has also increased confidence in our codebase's reliability and ensured better collaboration among team members.
 
 ## Running code and tracking experiments
 
@@ -369,7 +376,15 @@ We also used a fixed random seed (seed: 42) throughout the project to ensure con
 >
 > Answer:
 
---- question 14 fill here ---
+![wandb](figures/wandb.png)
+
+As seen in the figure, we ran three of our experiments using Weights & Biases to track training progress. These tests were run locally, so we limited the number of training epochs and reduced the percentage of our preprocessed dataset used for training. Our main focus was finding the optimal learning rate and the number of training steps.
+
+Initially, we set the learning rate too high, which caused the model to overshoot and fail to converge. These runs, represented by the hidden tests in the screenshot, generated noisy data. Once we found a suitable learning rate, we conducted the "honest-water-3" experiment with a small dataset to confirm that the model could still learn, even with the risk of overfitting. The results showed rapid decreases in training loss and significant increases in accuracy.
+
+Following that, we increased the amount of data used. While training accuracy improved more gradually, the validation accuracy reached higher values, showing that the model was generalizing better without overfitting initially. However, at later stages, the validation accuracy began to drop, indicating some overfitting as training progressed.
+
+With more compute and time, we would scale to the full training dataset to push validation accuracy further, as this current setup is likely constrained by the limited data.
 
 ### Question 15
 
@@ -384,7 +399,21 @@ We also used a fixed random seed (seed: 42) throughout the project to ensure con
 >
 > Answer:
 
---- question 15 fill here ---
+We created two Docker images, one for training and evaluation, and one for API deployment. Each image includes all necessary dependencies and configurations. For both we utilized the cookiecutter template's images as our base and modified it to implement the required functionality.
+
+`tain.dockerfile` installs system-level dependencies (gcc, git), Python libraries (via requirements.txt), and sets up the environment with DVC to pull data. This Docker image was executed with the following command:
+
+```
+docker build -t project-trainer:latest -f Dockerfile .
+docker run project-trainer:latest
+```
+`api.dockerfile` installs application dependencies and starts the API server with Uvicorn. The API Docker image can be run as follows:
+
+```
+docker build -t project-api:latest -f api.dockerfile .
+docker run -p 8000:8000 project-api:latest
+```
+You can find our train.dockerfile here <https://github.com/moorekevin/dtu-02476-mlops-project/blob/main/dockerfiles/train.dockerfile>
 
 ### Question 16
 
@@ -399,7 +428,10 @@ We also used a fixed random seed (seed: 42) throughout the project to ensure con
 >
 > Answer:
 
---- question 16 fill here ---
+We worked in two sub-teams one of which focused on model development, while the other took on Dockerfiles and cloud deployment. For debugging, the model team primarily relied on the VSCode debugger for step by step inspection of the code, alongside the traditional print statements and logging. The Docker and cloud team primarily utilized Docker logs to identify issues related to dependency mismatches or incorrect configurations. 
+
+While we didn’t run any specific profiling, we addressed performance concerns iteratively by observing runtime behavior during experiments and optimizing as needed. This practical debugging approach ensured smooth development and deployment throughout the project.
+
 
 ## Working in the cloud
 
@@ -416,7 +448,19 @@ We also used a fixed random seed (seed: 42) throughout the project to ensure con
 >
 > Answer:
 
---- question 17 fill here ---
+We used the following GCP services in our project:
+
+- **Compute Engine API**: For training our model on virtual machines.
+- **Cloud Build API**: Automated Docker image builds after GitHub updates.
+- **Artifact Registry API**: Stored Docker images for easy retrieval and deployment.
+- **Cloud Storage API**: Managed datasets and model artifacts with DVC for version control.
+- **Cloud Run API**: Deployed our FastAPI-based model for inference via a public endpoint.
+- **Cloud Functions API**: Triggered lightweight tasks and automated workflows.
+- **IAM Service API**: Managed permissions for secure access to Compute Engine and other resources.
+- **Cloud Logging API**: Monitored logs for debugging and performance optimization.
+
+These services streamlined training, deployment, and resource management while ensuring security and scalability.
+
 
 ### Question 18
 
@@ -431,7 +475,11 @@ We also used a fixed random seed (seed: 42) throughout the project to ensure con
 >
 > Answer:
 
---- question 18 fill here ---
+We used GCP to train our model (primarily) and deploy our API.
+
+For training, after some experimentation, we settled on an n1-standard high-CPU instance with balanced CPU and memory configurations. This setup provided sufficient computational resources without unnecessary overhead. In hindsight, we could have optimized further by selecting an instance with less RAM, but since we weren’t at risk of exceeding our allocated credits, we prioritized ease of use over fine-tuning the instance type. However, the high-CPU configuration was essential for our experiments.
+
+The virtual machines were configured to run a lightweight Debian-based operating system, ensuring efficiency and quick startup times.
 
 ### Question 19
 
@@ -440,7 +488,7 @@ We also used a fixed random seed (seed: 42) throughout the project to ensure con
 >
 > Answer:
 
---- question 19 fill here ---
+![bucket](figures/bucket.png)
 
 ### Question 20
 
@@ -449,7 +497,7 @@ We also used a fixed random seed (seed: 42) throughout the project to ensure con
 >
 > Answer:
 
---- question 20 fill here ---
+![registry](figures/registry.png)
 
 ### Question 21
 
@@ -458,7 +506,7 @@ We also used a fixed random seed (seed: 42) throughout the project to ensure con
 >
 > Answer:
 
---- question 21 fill here ---
+![build](figures/build.png)
 
 ### Question 22
 
@@ -473,7 +521,9 @@ We also used a fixed random seed (seed: 42) throughout the project to ensure con
 >
 > Answer:
 
---- question 22 fill here ---
+We utilized GCP's Compute Engine to train our model in the cloud, leveraging its flexibility and scalability. After dockerizing the project and building the image on the cloud using Cloud Build triggers, we ran the image directly from the GCP terminal (manually). Compute Engine provided the control we needed for running customized environments while ensuring reliable performance.
+
+To handle data storage, we mounted an S3 bucket cloud storage to the instance. This setup allowed us to efficiently preprocess data and, upon the completion of training, save the resulting model files directly to the corresponding bucket directory for seamless access and management.
 
 ## Deployment
 
@@ -564,7 +614,9 @@ We **did not** implement any monitoring. However, we know monitoring is crucial 
 >
 > Answer:
 
-We used about **$10.62** out of our **$50** credit. Most of this came from **Compute Engine** which cost around **$9.91**. We also spent about **$0.31** on **Cloud Storage**. Overall the cloud experience was positive, we liked how easy it was to set up a virtual machine and have our code running globally quickly, especially with the gcloud CLI. In general the cloud can be super convenient and powerful but you definetely do need to keep track of costs and resource usage to avoid surprises (no surprise loops!).
+We used about **$10.62** out of our **$50** credit. Most of this came from **Compute Engine** which cost around **$9.91**. Then for one more night we forgot to stop the engine and the toatl came up to **$19.59** out of **$50**, showing the importance of managing your computational resources correctly. We also spent about **$0.31** on **Cloud Storage**. 
+
+Overall working in the cloud is an efficient solution to run your code quickly, economically, and universaly. That being said, it has a steap learning curve and running the simplest commands can take time when you are getting familiarized with the tools.
 
 ### Question 28
 
@@ -597,7 +649,20 @@ Yes, we implemented a **simple HTML interface** for our FastAPI service. This me
 >
 > Answer:
 
---- question 29 fill here ---
+![overview](figures/overview.png)
+
+The figure above shows the overall architecture of our system and the services we use. The process starts locally, where we experiment with different parameters using Weights & Biases (W&B) and Hydra for configuration management. Once optimal parameters are identified, we create a new branch, commit the changes, and push them to GitHub.
+
+From GitHub, the Continuous Integration pipeline kicks in. We use GitHub Actions to run various checks, including code formatting, linting, and unit tests. If all actions pass, the branch can be merged into the main branch. This ensures that the codebase remains clean and functional.
+
+Merging into the main branch triggers a build process in Google Cloud Platform (GCP). The Docker image is built using `train.dockerfile` for training or `api.dockerfile` for deployment, depending on the use case. The resulting Docker image is stored in GCP Artifact Registry as the latest version.
+
+For model training, the image is deployed to Google Compute Engine, where the model is trained with the new configurations. Once training is complete, the updated model is deployed via a FastAPI application. This API serves predictions and is hosted on a scalable platform (e.g., Google App Engine).
+
+End users can interact with the system by querying the FastAPI endpoint or using our simple UI. The Dockerized API ensures consistency and easy scaling. If users need the source code, they can clone it directly from GitHub. For deploying the latest updates, they can pull the newest Docker image.
+
+This architecture ensures smooth collaboration, reproducibility, and scalable deployment for both model training and serving.
+
 
 ### Question 30
 
@@ -611,7 +676,17 @@ Yes, we implemented a **simple HTML interface** for our FastAPI service. This me
 >
 > Answer:
 
---- question 30 fill here ---
+The biggest challenges in our project revolved around **learning and integrating new tools** while managing time constraints. For many of us, this was our first time using tools like Hydra, DVC, and deploying models via Docker in the cloud, which led to a steep learning curve. 
+
+Setting up **DVC** for data versioning was one of the most time-consuming tasks. Initially, we ran into problems with correctly setting up pointers to the remote bucket, which caused errors when trying to retrieve data. We solved this by carefully reading the documentation and testing different configurations until we got it working. 
+
+Another challenge was with **Docker and cloud deployment**. While creating Docker images was relatively straightforward, deploying and running them on GCP introduced unexpected complexities, such as handling environment variables, and paths. We spent significant time debugging these issues using logs and testing smaller changes iteratively. We eventually streamlined the process by automating builds and using triggers for training the model.
+
+Additionally, **training in the cloud** presented challenges. Limited computational resources (no access to GPUs and even CPUs at some high-demand times) made it difficult to run long training sessions or larger models. To address this, we tested configurations locally before deploying to GCP, ensuring efficient use of resources, but we still only trained on a percentage of our dataset because we were pressed on time.
+
+On a positive note, CI did not cause significant issues as we implemented tests and lining quite early in the process, making sure to protect our main branch. Of course, this does not mean that collaboration was always easy as we needed to ensure that everyone's code worked seamlessly together and that one piece wasn't breaking another. 
+
+Overall, we overcame these challenges by splitting tasks based on team strengths, scheduling regular Zoom calls, and keeping detailed documentation for every tool we implemented.
 
 ### Question 31
 
